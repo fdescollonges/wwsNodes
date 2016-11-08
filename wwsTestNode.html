@@ -4,13 +4,13 @@
         color: '#a6bbcf',
         defaults: {
             name: {value:""},
-            wwsApplication: {value:"",type:"wwsApplication"}
+            wwsApplications: {value:"",type:"wwsApplications"}
         },
         inputs:1,
         outputs:1,
         icon: "light.png",
         label: function() {
-            return this.name||"WWS AppToken";
+            return this.name||"WWS TestNode";
         }
     });
 </script>
@@ -21,8 +21,8 @@
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
     <div class="form-row">
-        <label for="node-input-wwsApplication"><i class="icon-tag"></i> WWS Application</label>
-        <input type="text" id="node-input-wwsApplication" placeholder="Waston Work Application">
+        <label for="node-input-wwsApplications"><i class="icon-tag"></i> WWS Application</label>
+        <input type="text" id="node-input-wwsApplications" placeholder="Waston Work Applications">
     </div>
 </script>
 

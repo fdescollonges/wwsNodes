@@ -8,7 +8,6 @@ var jsonwebtoken = require('jsonwebtoken');
 var jwtToken;
 var errors = 0;
 
-
 module.exports = function(RED) {
 	function wwsApplications(n) {
 		RED.nodes.createNode(this,n);
