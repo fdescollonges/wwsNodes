@@ -9,11 +9,11 @@ wwsMessages :
 
 
 ## Usage
-
+To be used with Node-RED
 
 
 ## Developing
-
+Under development
 
 
 ### Tools
