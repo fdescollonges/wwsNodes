@@ -3,7 +3,9 @@
     "version"      : "0.0.1",
     "description"  : "Draft of useful nodes for Watson Work Services",
     "dependencies": {
-    
+    	"url":"*",
+    	"request":"*", 
+    	"jwtWebToken":"*"
     },
     "keywords": [ "wws" ],
     "node-red"     : {
