@@ -4,6 +4,7 @@
 Watson Work Services nodes for Node-RED
 
 wwsApplications : Config Node
+
 wwsMessages :  
 
 
