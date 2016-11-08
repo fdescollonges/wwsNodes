@@ -5,7 +5,7 @@
     "dependencies": {
     	"url":"*",
     	"request":"*", 
-    	"jwtWebToken":"*"
+    	"jsonwebtoken":"*"
     },
     "keywords": [ "wws" ],
     "node-red"     : {
