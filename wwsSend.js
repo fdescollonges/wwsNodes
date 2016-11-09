@@ -12,7 +12,7 @@ module.exports = function(RED) {
 			
 			msg.payload = "jwt :" + appId + "/" + appSecret + " Bearer {"
 					+ jwtToken + "}";
-			respond(content,'580e30c3e4b0e0daf7d77b87', (err, body) => {
+			respond(content,'580e30c3e4b0e0daf7d77b87', jwtToken, (err, body) => {
 				if (err) {
 					console.log (`Unable to send message : ${err}`)					
 				};
@@ -23,7 +23,7 @@ module.exports = function(RED) {
 	
 	RED.nodes.registerType("wwsSend", wwsSend);
 	
-	function respond(text, spaceId, callback) {
+	function respond(text, spaceId, jswToken, callback) {
 		var url = `https://api.watsonwork.ibm.com/v1/spaces/${spaceId}/messages`;
 		var body = {
 			headers: {
