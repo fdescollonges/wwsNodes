@@ -1,6 +1,6 @@
 {
     "name"         : "node-red-contrib-wwsNodes",
-    "version"      : "0.0.3",
+    "version"      : "0.0.4",
     "description"  : "Draft of useful nodes for Watson Work Services",
     "dependencies": {
     	"url":"*",
@@ -8,6 +8,12 @@
     	"jsonwebtoken":"*"
     },
     "keywords": [ "wws" ],
+      "author": "Franck Descollonges <franck_descollonges@fr.ibm.com>",
+	  "license": "IPL-1.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.ibm.com/franck-descollonges/wwsNodes.git"
+  },
     "node-red"     : {
         "nodes": {
             "wwsApplications": "wwsApplications.js", 
