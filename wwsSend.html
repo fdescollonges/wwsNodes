@@ -1,0 +1,31 @@
+<script type="text/javascript">
+    RED.nodes.registerType('wwsSend',{
+        category: 'function',
+        color: '#a6bbcf',
+        defaults: {
+            name: {value:""},
+            wwsApplications: {value:"",type:"wwsApplications"}
+        },
+        inputs:1,
+        outputs:1,
+        icon: "wws.png",
+        label: function() {
+            return this.name||"WWS Send";
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="wwsSend">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-wwsApplications"><i class="icon-tag"></i> WWS Applications</label>
+        <input type="text" id="node-input-wwsApplications" placeholder="Waston Work Applications">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="wwsSend">
+    <p>A node to send a massage IBM Watson Work Services</p>
+</script>
