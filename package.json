@@ -1,6 +1,6 @@
 {
     "name"         : "node-red-contrib-wwsNodes",
-    "version"      : "0.0.2",
+    "version"      : "0.0.3",
     "description"  : "Draft of useful nodes for Watson Work Services",
     "dependencies": {
     	"url":"*",
@@ -10,8 +10,8 @@
     "keywords": [ "wws" ],
     "node-red"     : {
         "nodes": {
-            "wwsApplications": "wwsNodes/wwsApplications.js", 
-            "wwsTestNode":"wwsNodes/wwsTestNode.js"
+            "wwsApplications": "wwsApplications.js", 
+            "wwsTestNode":"wwsTestNode.js"
         }
     }
 }
