@@ -5,10 +5,14 @@
             appName: {value:"",required:true},
             appId: {value:"",required:true,value:""},
             appSecret: {value:"",type:"password",required:true},
-            accessToken: {value:""}
+            accessToken: {value:""},
+            listspaces: {value:""}
         },
         label: function() {
             return this.appName+":{"+this.appId+'}';
+        },
+        oneditsave: function() {
+        	console.log('wwsApplications saved');
         }
     });
 </script>

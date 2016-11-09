@@ -21,6 +21,13 @@ module.exports = function(RED) {
 						}			
 		console.log('Got new token : '+token);
 		this.accessToken=token;
+		node.getSpaces(token,
+			(err, spaces) => {
+				if (err) {
+					console.error('Unable to get spaces : ' + err);
+				}
+			console.log('Got all spaces :' + spaces);	
+			})
 		});
 	}
 	RED.nodes.registerType("wwsApplications",wwsApplications);
@@ -45,7 +52,10 @@ module.exports = function(RED) {
 					//console.log("AccessToken : "+this.accessToken);
 				});
 	}
-
+	
+	wwsApplications.prototype.getSpaces = function(token, cb) {
+		console.log('In get spaces');
+	}
 
 
 	wwsApplications.prototype.run = function(cb) {

@@ -1,3 +1,11 @@
+/**
+ * Created by franck on 09/11/2016.
+ */
+
+"use strict";
+var request = require('request');
+var url = require('url');
+
 module.exports = function(RED) {
 	function wwsSend(config) {
 		RED.nodes.createNode(this, config);
@@ -8,22 +16,23 @@ module.exports = function(RED) {
 			var appId = this.wwsApplications.appId;
 			var appSecret = this.wwsApplications.appSecret;
 			var jwtToken = this.wwsApplications.accessToken;
+			var spaceid = config.spaceid;
 			var content = msg.payload;
 			
 			msg.payload = "jwt :" + appId + "/" + appSecret + " Bearer {"
 					+ jwtToken + "}";
-			respond(content,'580e30c3e4b0e0daf7d77b87', jwtToken, (err, body) => {
+			respond(content, spaceid, jwtToken, (err, body) => {
 				if (err) {
 					console.log (`Unable to send message : ${err}`)					
 				};
-				console.log(`Message Posted : ${body}`);
+				console.log('Message Posted : '+ body);
 			});
 		});
 	}
 	
 	RED.nodes.registerType("wwsSend", wwsSend);
 	
-	function respond(text, spaceId, jswToken, callback) {
+	function respond(text, spaceId, jwtToken, callback) {
 		var url = `https://api.watsonwork.ibm.com/v1/spaces/${spaceId}/messages`;
 		var body = {
 			headers: {

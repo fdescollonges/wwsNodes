@@ -4,10 +4,12 @@
         color: '#a6bbcf',
         defaults: {
             name: {value:""},
-            wwsApplications: {value:"",type:"wwsApplications"}
+            wwsApplications: {value:"",type:"wwsApplications"},
+            allspaces: {value:true},
+            spaceid: {value:""}
         },
         inputs:1,
-        outputs:1,
+        outputs:0,
         icon: "wws.png",
         label: function() {
             return this.name||"WWS Send";
@@ -23,6 +25,16 @@
     <div class="form-row">
         <label for="node-input-wwsApplications"><i class="icon-tag"></i> WWS Applications</label>
         <input type="text" id="node-input-wwsApplications" placeholder="Waston Work Applications">
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-spaceid"><i class="icon-tag"></i> SpaceID</label>
+        <input type="text" id="node-input-spaceid" placeholder="spaceid">
+    </div>
+    <div class="form-row" id="node-allspaces">
+        <label>&nbsp;</label>
+        <input type="checkbox" id="node-input-allspaces" style="display: inline-block; width: auto; vertical-align: top;">
+        <label for="node-input-allspaces" style="width: 70%;"> Send to all spaces</label>
     </div>
 </script>
 
