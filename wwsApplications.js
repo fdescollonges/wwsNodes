@@ -26,7 +26,8 @@ module.exports = function(RED) {
 								if (err) {
 									console.error('Unable to get spaces : ' + err);
 								}
-								console.log('Got all spaces :' + spaces);	
+								console.log('Got all spaces :' + spaces);
+								node.listSpaces = spaces;
 							})
 				});
 	}

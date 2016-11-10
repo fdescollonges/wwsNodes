@@ -15,7 +15,7 @@
  
         	function getToken(appId, appSecret, cb) {
 //        		setTimeout(function () {
-					$("#node-config-input-listSpaces").val('Fetching spaces');
+
     				var string = appId + ":" + appSecret;
     				var toBase64 = btoa(string);
     				var authorization = "Basic "+toBase64;
@@ -60,10 +60,11 @@
 //        		},3000);
         		}
         	
-        	var wwsApp = this;
+        	wwsApp = this;
         	console.log('wwsApplications saved');
             var appId = $("#node-config-input-appId").val();
             var appSecret = $("#node-config-input-appSecret").val();
+			$("#node-config-input-listSpaces").val('Fetching spaces');
         	getToken(appId, appSecret, function(err,token) {
         		if (err) {
         			console.error('Unable to get Token : '+err);

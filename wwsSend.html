@@ -13,7 +13,42 @@
         icon: "wws.png",
         label: function() {
             return this.name||"WWS Send";
-        }
+        }, 
+        oneditprepare: function() {
+        	console.log("Oneditprepare");
+        	var nodeConfig = this;
+        	console.log(nodeConfig.wwsApplications);
+        	console.log(nodeConfig.wwsApplications.listSpaces);
+        	console.log(nodeConfig.accessToken);
+        	console.log(wwsApp);
+        	console.log(wwsApp.listSpaces);
+        	
+        	function enable_spacelist() {
+        		if ($("#node-input-allspaces").is(':checked')) {
+            		$("#node-spaceid").show();
+            		nodeConfig.allspaces = true;
+        		} else {
+            		$('#node-spaceid').hide();
+            		nodeConfig.allspaces = false;
+        		};
+        	};
+        	
+       		$("#node-input-allspaces").on("click", function () {
+        			enable_spacelist();
+       		});
+			enable_spacelist();
+	
+
+        	
+//         	if (node.allspaces == true) {
+//         		$('#node-input-spaceid').attr("disabled",true);
+//         	} else {
+//             	if (node.spaceid == "") {
+//             		$('#node-input-spaceid').removeAttr("disabled");
+//             		$('#node-input-spaceid').val("No spaces available")	
+//         		};
+//         	};
+    	}
     });
 </script>
 
@@ -26,16 +61,16 @@
         <label for="node-input-wwsApplications"><i class="icon-tag"></i> WWS Applications</label>
         <input type="text" id="node-input-wwsApplications" placeholder="Waston Work Applications">
     </div>
-
-    <div class="form-row">
+    <div class="form-row" id="node-allspaces">
+        <label>&nbsp;</label>
+        <input type="checkbox" id="node-input-allspaces" style="display: inline-block; width: auto; vertical-align: top;" checked>
+        <label for="node-input-allspaces" style="width: 70%;"> Send to all spaces</label>
+    </div>
+    <div class="form-row" id="node-spaceid">
         <label for="node-input-spaceid"><i class="icon-tag"></i> SpaceID</label>
         <input type="text" id="node-input-spaceid" placeholder="spaceid">
     </div>
-    <div class="form-row" id="node-allspaces">
-        <label>&nbsp;</label>
-        <input type="checkbox" id="node-input-allspaces" style="display: inline-block; width: auto; vertical-align: top;">
-        <label for="node-input-allspaces" style="width: 70%;"> Send to all spaces</label>
-    </div>
+
 </script>
 
 <script type="text/x-red" data-help-name="wwsSend">
