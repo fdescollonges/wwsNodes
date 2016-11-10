@@ -6,28 +6,108 @@
             appId: {value:"",required:true,value:""},
             appSecret: {value:"",type:"password",required:true},
             accessToken: {value:""},
-            listspaces: {value:""}
+            listSpaces: {value:""}
         },
         label: function() {
             return this.appName+":{"+this.appId+'}';
         },
         oneditsave: function() {
+ 
+        	function getToken(appId, appSecret, cb) {
+//        		setTimeout(function () {
+					$("#node-config-input-listSpaces").val('Fetching spaces');
+    				var string = appId + ":" + appSecret;
+    				var toBase64 = btoa(string);
+    				var authorization = "Basic "+toBase64;
+    				console.log('Getting token : ' +authorization);
+    				var _url = 'https://api.watsonwork.ibm.com/oauth/token';
+	   				$.ajax({
+    					url: _url,
+    					headers : {
+    						"Content-Type": "application/x-www-form-urlencoded",
+    						"Authorization" : authorization
+    					},
+	    				type: 'POST',
+	    		        async: false,
+	    				data: 'grant_type=client_credentials', 
+	    				json: true,
+	    				success: function(msg) {
+	    					console.log("success : "+msg.access_token);
+	    					cb(null, msg.access_token);
+	    				}	  
+	    			});   			
+//        		}, 3000);
+        	};
+        	
+        	function getSpaces(token, cb) {
+//        		setTimeout(function(){
+        		console.log('In get spaces');
+        		var _url = 'https://workspace.ibm.com/graphql?query=query%20getSpaceId%7Bspaces(first%3A200)%7Bitems%7Bid%20title%7D%7D%7D%0A&operationName=getSpaceId';
+	   			$.ajax({
+    				url: _url,
+    				headers : {
+    					jwt : token,
+						'content-type' : 'application/graphql'
+    				},
+    				type: 'POST',
+    		        async: false,
+    				json: true,
+    				success: function(msg) {
+    					console.log("Get Spaces success : "+msg.data.spaces.items);
+    					cb(null, msg.data.spaces.items);
+    				}	  
+    			})   			
+//        		},3000);
+        		}
+        	
+        	var wwsApp = this;
         	console.log('wwsApplications saved');
+            var appId = $("#node-config-input-appId").val();
+            var appSecret = $("#node-config-input-appSecret").val();
+        	getToken(appId, appSecret, function(err,token) {
+        		if (err) {
+        			console.error('Unable to get Token : '+err);
+        		}
+        		console.log("Token : "+token);
+        		wwsApp.accessToken = token;
+                $("#node-config-input-accessToken").val(token);
+        		getSpaces(token, function(err, spaces) {
+        			if(err){
+        				console.error('Unable to get Spaces :'+err);
+        			}
+        			wwsApp.listSpaces = spaces;
+                    $("#node-config-input-listSpaces").val(spaces);
+        		})
+        	});
         }
     });
 </script>
 
 <script type="text/x-red" data-template-name="wwsApplications">
+        <div class="form-row">
+            <p style="margin-top: 10px;"><b>1.</b> <span>Configure your own app at </span> <a href="https://workspace.ibm.com/developer/apps" target="_blank" style="text-decoration:underline;">IBM Watson Workspace</a></p>
+        </div>
+        <div class="form-row">
+            <p style="margin-top: 10px;"><b>2.</b> <span>Copy the project credentials here</span>:</p>
+        </div>
     <div class="form-row">
         <label for="node-config-input-appName"><i class="icon-bookmark"></i> Application Name</label>
         <input type="text" id="node-config-input-appName">
     </div>    
     <div class="form-row">
-        <label for="node-config-input-appId"><i class="icon-tag"></i> Application Id</label>
+        <label for="node-config-input-appId"><i class="fa fa-user"></i> Application Id</label>
         <input type="text" id="node-config-input-appId">
     </div>
     <div class="form-row">
-        <label for="node-config-input-appSecret"><i class="icon-tag"></i> Application Secret</label>
+        <label for="node-config-input-appSecret"><i class="fa fa-key"></i> Application Secret</label>
         <input type="password" id="node-config-input-appSecret">
     </div>
+    
+	<input type="hidden" id="node-config-input-accessToken">
+
+    <div class="form-row">
+        <label for="node-config-input-appSecret"><i class="fa fa-key"></i> List Spaces</label>
+		<input type="text" id="node-config-input-listSpaces" placeholder="" readonly>
+	</div>
+
 </script>

@@ -16,12 +16,15 @@ module.exports = function(RED) {
 			var appId = this.wwsApplications.appId;
 			var appSecret = this.wwsApplications.appSecret;
 			var jwtToken = this.wwsApplications.accessToken;
+			var listSpaces = this.wwsApplications.listSpaces;
 			var spaceid = config.spaceid;
 			var content = msg.payload;
+			console.log("All Spaces");
+			console.log(listSpaces);
 			
 			msg.payload = "jwt :" + appId + "/" + appSecret + " Bearer {"
 					+ jwtToken + "}";
-			respond(content, spaceid, jwtToken, (err, body) => {
+			sendMessage(content, spaceid, jwtToken, (err, body) => {
 				if (err) {
 					console.log (`Unable to send message : ${err}`)					
 				};
@@ -32,7 +35,7 @@ module.exports = function(RED) {
 	
 	RED.nodes.registerType("wwsSend", wwsSend);
 	
-	function respond(text, spaceId, jwtToken, callback) {
+	function sendMessage(text, spaceId, jwtToken, callback) {
 		var url = `https://api.watsonwork.ibm.com/v1/spaces/${spaceId}/messages`;
 		var body = {
 			headers: {

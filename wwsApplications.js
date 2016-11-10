@@ -15,20 +15,20 @@ module.exports = function(RED) {
 		node.appId = n.appId;
 		node.appSecret = n.appSecret;
 		node.initialize(
-					   (err, token) => {
-						if (err) {
-							console.error('Initialize : Failed');
-						}			
-		console.log('Got new token : '+token);
-		this.accessToken=token;
-		node.getSpaces(token,
-			(err, spaces) => {
-				if (err) {
-					console.error('Unable to get spaces : ' + err);
-				}
-			console.log('Got all spaces :' + spaces);	
-			})
-		});
+				(err, token) => {
+					if (err) {
+						console.error('Initialize : Failed');
+					}			
+					console.log('Got new token : '+token);
+					this.accessToken=token;
+					node.getSpaces(token,
+							(err, spaces) => {
+								if (err) {
+									console.error('Unable to get spaces : ' + err);
+								}
+								console.log('Got all spaces :' + spaces);	
+							})
+				});
 	}
 	RED.nodes.registerType("wwsApplications",wwsApplications);
 
@@ -49,13 +49,36 @@ module.exports = function(RED) {
 					console.log("Initialized JWT token");
 					this.accessToken = token();
 					cb(undefined, this.accessToken);
-					//console.log("AccessToken : "+this.accessToken);
+					// console.log("AccessToken : "+this.accessToken);
 				});
 	}
-	
+
 	wwsApplications.prototype.getSpaces = function(token, cb) {
 		console.log('In get spaces');
-	}
+		var _url = 'https://workspace.ibm.com/graphql?query=query%20getSpaceId%7Bspaces(first%3A200)%7Bitems%7Bid%20title%7D%7D%7D%0A&operationName=getSpaceId';
+		var _headers = {
+				//Authorization: `Bearer ${token}`,
+				jwt : token,
+				'content-type' : 'application/graphql'
+		};
+
+		var _query = "query getSpaceId{spaces(first:200){items{id title}}}";
+
+		var _request = {
+				headers: _headers,
+				json: true,
+		};
+
+		request.post(_url, _request, (err, res) => {
+			if (err) {
+				console.error(`Error requesting spaces : ${err}`);
+				cb(err);
+				return;
+			}
+			cb(null, res.body.data.spaces.items);
+		});
+
+	};
 
 
 	wwsApplications.prototype.run = function(cb) {
@@ -94,7 +117,7 @@ module.exports = function(RED) {
 				// Save the fresh token
 				console.log('Got new token');
 				tok = res.body.access_token;
-				//this.accessToken = tok;
+				// this.accessToken = tok;
 
 				// Schedule next refresh a bit before the token expires
 				const t = ttl(tok);
