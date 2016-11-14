@@ -5,8 +5,10 @@
         defaults: {
             name: {value:""},
             wwsApplications: {value:"",type:"wwsApplications"},
-            allspaces: {value:true},
-            spaceid: {value:""}
+            allSpaces: {value:false},
+            listSpaces: {value:""},
+            spaceId: {value:""},
+            update: {value:""}
         },
         inputs:1,
         outputs:0,
@@ -18,36 +20,71 @@
         	console.log("Oneditprepare");
         	var nodeConfig = this;
         	console.log(nodeConfig.wwsApplications);
-        	console.log(nodeConfig.wwsApplications.listSpaces);
         	console.log(nodeConfig.accessToken);
-        	console.log(wwsApp);
-        	console.log(wwsApp.listSpaces);
-        	
+        	if (typeof(wwsApp) != "undefined") {
+        			console.log(wwsApp);
+        			console.log(wwsApp.listSpaces);
+        			nodeConfig.listSpaces = wwsApp.listSpaces;
+        	};
         	function enable_spacelist() {
-        		if ($("#node-input-allspaces").is(':checked')) {
-            		$("#node-spaceid").show();
-            		nodeConfig.allspaces = true;
+        		if ($("#node-input-allSpaces").is(':checked')) {
+            		$("#node-spaceId").hide();            		
+    	        	if (typeof(wwsApp) != "undefined") {
+    					$("node-input-listSpaces").val(wwsApp.listSpaces);
+    					nodeConfig.listSpaces = wwsApp.listSpaces;
+    	        	};
+            		$("#node-listId").show();
+            		nodeConfig.allSpaces = true;
         		} else {
-            		$('#node-spaceid').hide();
-            		nodeConfig.allspaces = false;
+    	        	if (typeof(wwsApp) != "undefined") {
+    					nodeConfig.listSpaces = wwsApp.listSpaces;
+    					show_spaces();
+    	        	}
+            		$('#node-spaceId').show();
+            		$("#node-listId").hide();
+            		nodeConfig.allSpaces = false;
         		};
         	};
         	
-       		$("#node-input-allspaces").on("click", function () {
-        			enable_spacelist();
+       		$("#node-input-allSpaces").on("click", function () {
+        		$("#node-input-update").val(Date.now);
+        		enable_spacelist();
        		});
 			enable_spacelist();
-	
-
-        	
-//         	if (node.allspaces == true) {
-//         		$('#node-input-spaceid').attr("disabled",true);
-//         	} else {
-//             	if (node.spaceid == "") {
-//             		$('#node-input-spaceid').removeAttr("disabled");
-//             		$('#node-input-spaceid').val("No spaces available")	
-//         		};
-//         	};
+			
+			$("#node-input-listSpaces").load(function () {
+	        	if (typeof(wwsApp) != "undefined") {
+	        		console.log("node-input-listSpaces is visible");
+					$("node-input-listSpaces").val(wwsApp.listSpaces);
+	        	};
+			});
+			
+			
+			function show_spaces(){
+				console.log("ShowSpaces");
+				var listSpaces=nodeConfig.listSpaces;
+				$("#node-input-listSpaces").val(listSpaces);
+				console.log(listSpaces);
+				var option='';
+				if (listSpaces=="No space found yet") {
+					option='<option value="">No space found yet</option>';
+				} else { 
+					var objListSpaces = JSON.parse(listSpaces);
+					for(var i = 0; i < objListSpaces.length; i++) {
+					    var space = objListSpaces[i];
+				    	if (space.id == nodeConfig.spaceId) {
+				    	option += '<option value="'+ space.id + '" selected>' + space.title + '</option>';
+				    	} else {
+						option += '<option value="'+ space.id + '">' + space.title + '</option>';				    	
+				    	}
+				    	console.log(nodeConfig.spaceId);
+				    	console.log(space.id);
+				    	console.log(space.title);
+					}
+				};
+				$('#node-input-spaceId').empty().append(option);
+			};
+			show_spaces();
     	}
     });
 </script>
@@ -58,18 +95,34 @@
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
     <div class="form-row">
-        <label for="node-input-wwsApplications"><i class="icon-tag"></i> WWS Applications</label>
-        <input type="text" id="node-input-wwsApplications" placeholder="Waston Work Applications">
+        <label for="node-input-wwsApplications"><i class="icon-tag"></i> WWS App</label>
+        <input type="text" id="node-input-wwsApplications" placeholder="Waston Work App">
     </div>
-    <div class="form-row" id="node-allspaces">
+    <div class="form-row" id="node-allSpaces">
         <label>&nbsp;</label>
-        <input type="checkbox" id="node-input-allspaces" style="display: inline-block; width: auto; vertical-align: top;" checked>
-        <label for="node-input-allspaces" style="width: 70%;"> Send to all spaces</label>
+        <input type="checkbox" id="node-input-allSpaces" style="display: inline-block; width: auto; vertical-align: top;" checked>
+        <label for="node-input-allSpaces" style="width: 70%;"> Send to all spaces</label>
     </div>
-    <div class="form-row" id="node-spaceid">
-        <label for="node-input-spaceid"><i class="icon-tag"></i> SpaceID</label>
-        <input type="text" id="node-input-spaceid" placeholder="spaceid">
+    <div class="form-row" id="node-spaceId">
+        <label for="node-input-spaceId"><i class="fa fa-empire"></i><span> SpaceID</span></label>
+        <select id="node-input-spaceId" style="width:300px !important">
+<!--
+			<option value="580e30c3e4b0e0daf7d77b87">FDSpace</option>
+			<option value="580f725de4b0279617b9fe8b">TestAPI</option> 
+-->
+
+		</select>
     </div>
+    <div class="form-row" id="node-listId">
+        <label for="node-input-listSpaces"><i class="fa fa-list"></i> Spaces</label>
+        <input type="text" id="node-input-listSpaces" placeholder="" readonly>
+    </div>    
+
+	<div class="form-row" style="display:none !important">
+        <label for="node-input-update"><i class="fa fa-list"></i> Timestamp</label>
+        <input type="text" id="node-input-update" placeholder="">
+    </div>
+
 
 </script>
 

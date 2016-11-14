@@ -18,6 +18,8 @@ module.exports = function(RED) {
 				(err, token) => {
 					if (err) {
 						console.error('Initialize : Failed');
+						node.error("Unable to get token");
+						node.status({fill:"red",shape:"dot",text:"No Token"});
 					}			
 					console.log('Got new token : '+token);
 					this.accessToken=token;
@@ -25,9 +27,11 @@ module.exports = function(RED) {
 							(err, spaces) => {
 								if (err) {
 									console.error('Unable to get spaces : ' + err);
+									node.error("Unable to get spaces");
+									node.status({fill:"red",shape:"dot",text:"No spaces"});
 								}
-								console.log('Got all spaces :' + spaces);
-								node.listSpaces = spaces;
+								console.log('Got all spaces :' + JSON.stringify(spaces));
+								node.listSpaces = JSON.stringify(spaces);
 							})
 				});
 	}
@@ -38,12 +42,6 @@ module.exports = function(RED) {
 				(err, token) => {
 					if(err) {
 						console.error(`Failed to get JWT token - attempt ${errors}`);
-						errors++;
-						if(errors > 10) {
-							console.error(`Too many JWT token attempts; giving up`);
-							cb("Initialize : Too many JWT token attempts; giving up");
-						}
-						setTimeout(initialize(), 10000);
 						return;
 					}
 

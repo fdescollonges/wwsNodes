@@ -16,20 +16,39 @@ module.exports = function(RED) {
 			var appId = this.wwsApplications.appId;
 			var appSecret = this.wwsApplications.appSecret;
 			var jwtToken = this.wwsApplications.accessToken;
-			var listSpaces = this.wwsApplications.listSpaces;
-			var spaceid = config.spaceid;
+			var listSpaces = config.listSpaces;
+			var spaceId = config.spaceId;
+			var allSpaces = config.allSpaces;
 			var content = msg.payload;
-			console.log("All Spaces");
-			console.log(listSpaces);
 			
 			msg.payload = "jwt :" + appId + "/" + appSecret + " Bearer {"
 					+ jwtToken + "}";
-			sendMessage(content, spaceid, jwtToken, (err, body) => {
-				if (err) {
-					console.log (`Unable to send message : ${err}`)					
-				};
-				console.log('Message Posted : '+ body);
-			});
+			if (allSpaces) {
+				console.log("Sending to all Spaces");
+				console.log(listSpaces);
+				var objListSpaces = JSON.parse(listSpaces);
+				for(var i = 0; i < objListSpaces.length; i++) {
+				    var space = objListSpaces[i];
+					console.log(space.title);
+					console.log(space.id);
+					sendMessage(content, space.id, jwtToken, (err, body) => {
+						if (err) {
+							console.log (`Unable to send message : ${err}`)					
+						};
+						console.log('Message Posted : '+ body);
+					});
+					
+				}
+			} else {
+				console.log("Sending to one space : " + spaceId);
+				sendMessage(content, spaceId, jwtToken, (err, body) => {
+					if (err) {
+						console.log (`Unable to send message : ${err}`)					
+					};
+					console.log('Message Posted : '+ body);
+				});
+			}
+
 		});
 	}
 	
