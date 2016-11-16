@@ -131,4 +131,5 @@ module.exports = function(RED) {
 		// Obtain initial token
 		setImmediate(() => refresh(cb));
 	};
+	
 };

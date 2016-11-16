@@ -21,8 +21,7 @@ module.exports = function(RED) {
 			var allSpaces = config.allSpaces;
 			var content = msg.payload;
 			
-			msg.payload = "jwt :" + appId + "/" + appSecret + " Bearer {"
-					+ jwtToken + "}";
+			msg.payload = "jwt :" + appId + "/" + appSecret + " Bearer {"+ jwtToken + "}";
 			if (allSpaces) {
 				console.log("Sending to all Spaces");
 				console.log(listSpaces);
@@ -33,7 +32,7 @@ module.exports = function(RED) {
 					console.log(space.id);
 					sendMessage(content, space.id, jwtToken, (err, body) => {
 						if (err) {
-							console.log (`Unable to send message : ${err}`)					
+							console.log (`Unable to send message : ${err}`);					
 						};
 						console.log('Message Posted : '+ body);
 					});
@@ -43,7 +42,7 @@ module.exports = function(RED) {
 				console.log("Sending to one space : " + spaceId);
 				sendMessage(content, spaceId, jwtToken, (err, body) => {
 					if (err) {
-						console.log (`Unable to send message : ${err}`)					
+						console.log (`Unable to send message : ${err}`);					
 					};
 					console.log('Message Posted : '+ body);
 				});
@@ -84,4 +83,15 @@ module.exports = function(RED) {
 			callback(null, res.body);
 		});
 	}
+	 
+    RED.httpAdmin.get('/wwsApplication/', function(req, res){
+    	console.log("Getting wwsApplications data for "+req.query.id);
+    	let wwsAppTmp = RED.nodes.getNode(req.query.id);
+    	console.log(wwsAppTmp);
+		let listSpacesTmp = 'No space found';
+    	if (wwsAppTmp) {
+    		listSpacesTmp = wwsAppTmp.listSpaces;
+    	} 
+    	res.json(listSpacesTmp);
+    });
 };

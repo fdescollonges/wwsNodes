@@ -3,7 +3,7 @@
         category: 'config',
         defaults: {
             appName: {value:"",required:true},
-            appId: {value:"",required:true,value:""},
+            appId: {value:"",required:true},
             appSecret: {value:"",required:true},
             accessToken: {value:""},
             listSpaces: {value:""}
@@ -35,7 +35,7 @@
 	    				}	  
 	    			});   			
 //        		}, 3000);
-        	};
+        	}
         	
         	function getSpaces(token, cb) {
 //        		setTimeout(function(){
@@ -54,32 +54,31 @@
     					console.log("Get Spaces success : "+JSON.stringify(msg.data.spaces.items));
     					cb(null, JSON.stringify(msg.data.spaces.items));
     				}	  
-    			})   			
+    			});   			
 //        		},3000);
         		}
         	
-        	wwsApp = this;
-        	console.log('wwsApplications saved');
             var appId = $("#node-config-input-appId").val();
             var appSecret = $("#node-config-input-appSecret").val();
-			$("#node-config-input-listSpaces").val('No space found yet');
-			$("#node-config-input-listSpaces").val('No space found yet');
+            var configId = this.id;
+			$("#node-config-input-listSpaces").val('No space found');
+			$("#node-input-listSpaces").val('No space found');			
         	getToken(appId, appSecret, function(err,token) {
         		if (err) {
         			console.error('Unable to get Token : '+err);
         		}
         		console.log("Token : "+token);
-        		wwsApp.accessToken = token;
                 $("#node-config-input-accessToken").val(token);
         		getSpaces(token, function(err, spaces) {
         			if(err){
         				console.error('Unable to get Spaces :'+err);
                         $("#node-config-input-listSpaces").val("No spaces found");
         			}
-        			wwsApp.listSpaces = spaces;
                     $("#node-config-input-listSpaces").val(spaces);
                     $("#node-input-listSpaces").val(spaces);
-        		})
+                   	wwsApps[configId] = spaces;
+                	console.log("wwsApplications saved : " + JSON.stringify(wwsApps));
+        		});
         	});
         }
     });

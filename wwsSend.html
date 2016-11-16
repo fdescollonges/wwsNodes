@@ -1,5 +1,5 @@
-<script type="text/javascript">
-    RED.nodes.registerType('wwsSend',{
+<script type="text/javascript"> 
+    RED.nodes.registerType('wwsSend',{ 
         category: 'function',
         color: '#a6bbcf',
         defaults: {
@@ -8,7 +8,8 @@
             allSpaces: {value:false},
             listSpaces: {value:""},
             spaceId: {value:""},
-            update: {value:""}
+            update: {value:""},
+            spacesRefreshed: {value:true}
         },
         inputs:1,
         outputs:0,
@@ -17,57 +18,82 @@
             return this.name||"WWS Send";
         }, 
         oneditprepare: function() {
+        	// Init all variables
         	console.log("Oneditprepare");
-        	var nodeConfig = this;
-        	console.log(nodeConfig.wwsApplications);
-        	console.log(nodeConfig.accessToken);
-        	if (typeof(wwsApp) != "undefined") {
-        			console.log(wwsApp);
-        			console.log(wwsApp.listSpaces);
-        			nodeConfig.listSpaces = wwsApp.listSpaces;
-        	};
-        	function enable_spacelist() {
+        	oldValue = '';
+        	nodeConfig = this;
+        	listSpaces = nodeConfig.listSpaces;
+        	if (!listSpaces || listSpaces == '[]') {
+        		listSpaces = "No space found";
+        	}
+        	console.log(listSpaces);
+        	
+        	// Store configuration informations
+        	wwsApps = {};
+        	
+        	// Init UI
+        	enable_spacelist($("#node-input-wwsApplications").val());
+        	show_spaces();
+        	
+        	// Show textfield or select depending on checkbox
+        	function enable_spacelist(configId) {
         		if ($("#node-input-allSpaces").is(':checked')) {
             		$("#node-spaceId").hide();            		
-    	        	if (typeof(wwsApp) != "undefined") {
-    					$("node-input-listSpaces").val(wwsApp.listSpaces);
-    					nodeConfig.listSpaces = wwsApp.listSpaces;
-    	        	};
+    	        	if (wwsApps[configId]) {
+    					$("#node-input-listSpaces").val(wwsApps[configId]);
+    					nodeConfig.listSpaces = wwsApps[configId];
+    	        	} else {
+    	        		$("#node-input-listSpaces").val(nodeConfig.listSpaces);
+    	        	} 
             		$("#node-listId").show();
             		nodeConfig.allSpaces = true;
         		} else {
-    	        	if (typeof(wwsApp) != "undefined") {
-    					nodeConfig.listSpaces = wwsApp.listSpaces;
-    					show_spaces();
-    	        	}
+    	        	if (wwsApps[configId]) {
+    					nodeConfig.listSpaces = wwsApps[configId];
+    	        	} else {
+    	        		$("#node-input-listSpaces").val(nodeConfig.listSpaces);
+    	        	} 
+    	        	show_spaces();
             		$('#node-spaceId').show();
             		$("#node-listId").hide();
             		nodeConfig.allSpaces = false;
-        		};
-        	};
+        		}
+        	}
         	
+        	// Refresh on checkbox clicks
        		$("#node-input-allSpaces").on("click", function () {
         		$("#node-input-update").val(Date.now);
-        		enable_spacelist();
+        		enable_spacelist($("#node-input-wwsApplications"));
        		});
-			enable_spacelist();
-			
-			$("#node-input-listSpaces").load(function () {
-	        	if (typeof(wwsApp) != "undefined") {
-	        		console.log("node-input-listSpaces is visible");
-					$("node-input-listSpaces").val(wwsApp.listSpaces);
-	        	};
+
+			// Refresh on configuration changes
+			$("#node-input-wwsApplications").change(function () {
+	        		console.log("Config changed");
+	        		if (nodeConfig !== this) {
+	        			let tmpListSpaces = 'No space found';
+	        			if ((this.value !== oldValue) && (!wwsApps[this.value])) {
+                			$.getJSON('wwsApplication?id='+this.value,function(tmpListSpaces) {
+                				oldValue = this.value;
+	        					console.log(tmpListSpaces);
+	        					nodeConfig.listSpaces = tmpListSpaces;
+	        					enable_spacelist(this.value);
+                			});
+	        			} else {
+	        			  	nodeConfig.listSpaces = wwsApps[this.value];
+	        				enable_spacelist(this.value);
+	        			}
+					}
 			});
 			
-			
+			// Update Select list of choices
 			function show_spaces(){
 				console.log("ShowSpaces");
-				var listSpaces=nodeConfig.listSpaces;
-				$("#node-input-listSpaces").val(listSpaces);
+				var listSpaces = nodeConfig.listSpaces;
 				console.log(listSpaces);
+				$("#node-input-listSpaces").val(listSpaces);
 				var option='';
-				if (listSpaces=="No space found yet") {
-					option='<option value="">No space found yet</option>';
+				if (listSpaces=="No space found") {
+					option='<option value="">No space found</option>';
 				} else { 
 					var objListSpaces = JSON.parse(listSpaces);
 					for(var i = 0; i < objListSpaces.length; i++) {
@@ -81,10 +107,9 @@
 				    	console.log(space.id);
 				    	console.log(space.title);
 					}
-				};
+				}
 				$('#node-input-spaceId').empty().append(option);
-			};
-			show_spaces();
+			}
     	}
     });
 </script>
@@ -122,6 +147,11 @@
         <label for="node-input-update"><i class="fa fa-list"></i> Timestamp</label>
         <input type="text" id="node-input-update" placeholder="">
     </div>
+
+        <div class="form-row" id="node-spacesRefreshed" style="display:none">
+           <label>&nbsp;</label>
+           <a class="btn" id="node-btn-spacesRefreshed" href="#" disabled><span>Refresh Space list</span></a>
+        </div>
 
 
 </script>

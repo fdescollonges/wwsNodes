@@ -1,0 +1,4 @@
+eclipse.preferences.version=1
+excluded=//*.min.js\:fdnr//*\:git_wwsNodes/node_modules//*
+included=//*.html\://*.js
+projectSpecificOptions=true
