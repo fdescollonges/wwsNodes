@@ -639,16 +639,16 @@ function setDocumentScrollTop(ypos)
 
 </head>
 <body class="markdown-body">
-<h1> <a id="user-content-wwsnodes" class="anchor" href="#wwsnodes" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>wwsNodes</h1> 
-<p>Watson Work Services nodes for Node-RED</p> 
-<p>wwsApplications : Config Node</p> 
-<p>wwsSend : Send a message to a given space - Currently using SpaceID from <a href="https://workspace.ibm.com/graphql?query=query%20getSpaceId%7B%0A%20%20spaces(first%3A%20200)%20%7B%0A%20%20%20%20items%20%7B%0A%20%20%20%20%20%20id%0A%20%20%20%20%20%20title%0A%20%20%20%20%7D%0A%20%20%7D%0A%7D%0A&amp;operationName=getSpaceId">https://workspace.ibm.com/graphql?query=query%20getSpaceId%7B%0A%20%20spaces(first%3A%20200)%20%7B%0A%20%20%20%20items%20%7B%0A%20%20%20%20%20%20id%0A%20%20%20%20%20%20title%0A%20%20%20%20%7D%0A%20%20%7D%0A%7D%0A&amp;operationName=getSpaceId</a></p> 
-<h2> <a id="user-content-usage" class="anchor" href="#usage" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Usage</h2> 
+<h1> <a id="user-content-wwsnodes---waton-work-services-nodes-for-nodered" class="anchor" href="#wwsnodes---waton-work-services-nodes-for-nodered" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>wwsNodes - Waton Work Services Nodes for NodeRed</h1> 
+<p>Set of useful nodes for Watson Work Services for Node-RED</p> 
+<h3> <a id="user-content-list-of-nodes" class="anchor" href="#list-of-nodes" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>List of nodes</h3> 
+<h4> <a id="user-content-wwsapplications-configuration-node" class="anchor" href="#wwsapplications-configuration-node" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>wwsApplications (Configuration Node)</h4> 
+<p>Specify AppId and AppSecret of your application for Watson Workplace (from <a href="https://workspace.ibm.com/developer/apps">https://workspace.ibm.com/developer/apps</a>) and it will retrieve token for subsequent calls and spaces in which it has been added. This configuration node can be reused across multiple WWS nodes</p> 
+<h4> <a id="user-content-wwssend" class="anchor" href="#wwssend" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>wwsSend</h4> 
+<p>Send a message to one or all spaces Choose to send the incoming payload in all spaces or choose one space in the list</p> 
+<h3> <a id="user-content-usage" class="anchor" href="#usage" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Usage</h3> 
 <p>To be used with Node-RED</p> 
-<h2> <a id="user-content-developing" class="anchor" href="#developing" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Developing</h2> 
-<p>Under development</p> 
-<h3> <a id="user-content-tools" class="anchor" href="#tools" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Tools</h3> 
-<p>Created with <a href="https://github.com/Nodeclipse/nodeclipse-1">Nodeclipse</a> (<a href="http://marketplace.eclipse.org/content/nodeclipse">Eclipse Marketplace</a>, <a href="http://www.nodeclipse.org">site</a>) </p> 
-<p>Nodeclipse is free open-source project that grows with your contributions.</p>
+<h3> <a id="user-content-developing" class="anchor" href="#developing" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Developing</h3> 
+<p>Under development</p>
 </body>
 </html>
