@@ -92,9 +92,12 @@
 				console.log(listSpaces);
 				$("#node-input-listSpaces").val(listSpaces);
 				var option='';
+				
+				// change Test here!
 				if (listSpaces=="No space found") {
 					option='<option value="">No space found</option>';
 				} else { 
+				try {
 					var objListSpaces = JSON.parse(listSpaces);
 					for(var i = 0; i < objListSpaces.length; i++) {
 					    var space = objListSpaces[i];
@@ -107,10 +110,18 @@
 				    	console.log(space.id);
 				    	console.log(space.title);
 					}
-				}
 				$('#node-input-spaceId').empty().append(option);
+				}
+				catch (err) {
+					console.err("Unable to parse ListSpace : "+listSpace);
+					console.err(err);
+					option='<option value="">No space found</option>';
+					$('#node-input-spaceId').empty().append(option);
+				}
+
 			}
     	}
+    }
     });
 </script>
 
