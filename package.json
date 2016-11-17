@@ -12,7 +12,7 @@
 	  "license": "IPL-1.0",
   "repository": {
     "type": "git",
-    "url": "https://github.ibm.com/franck-descollonges/wwsNodes.git"
+    "url": "https://github.com/fdescollonges/wwsNodes.git"
   },
     "node-red"     : {
         "nodes": {
