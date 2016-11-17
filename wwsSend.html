@@ -14,6 +14,7 @@
         inputs:1,
         outputs:0,
         icon: "wws.png",
+        align: 'right',
         label: function() {
             return this.name||"WWS Send";
         }, 
@@ -45,6 +46,7 @@
     	        	} else {
     	        		$("#node-input-listSpaces").val(nodeConfig.listSpaces);
     	        	} 
+    	        	show_spaces();
             		$("#node-listId").show();
             		nodeConfig.allSpaces = true;
         		} else {
@@ -96,6 +98,7 @@
 				// change Test here!
 				if (listSpaces=="No space found") {
 					option='<option value="">No space found</option>';
+					$('#node-input-spaceId').empty().append(option);
 				} else { 
 				try {
 					var objListSpaces = JSON.parse(listSpaces);
@@ -113,8 +116,8 @@
 				$('#node-input-spaceId').empty().append(option);
 				}
 				catch (err) {
-					console.err("Unable to parse ListSpace : "+listSpace);
-					console.err(err);
+					console.error("Unable to parse ListSpace : "+listSpaces);
+					console.error(err);
 					option='<option value="">No space found</option>';
 					$('#node-input-spaceId').empty().append(option);
 				}
