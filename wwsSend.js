@@ -50,7 +50,7 @@ module.exports = function(RED) {
 				} else {
 				console.log("Sending to one space : " + spaceId);
 				if (!spaceId) {
-					node.red("Unable to send the message : "+msg.payload+" ( Invalid space )");
+					node.error("Unable to send the message : "+msg.payload+" ( Invalid space )");
 					node.status({fill:"red",shape:"dot",text:"Not sent"});					
 				} else {
 					sendMessage(msg, spaceId, jwtToken, (err, body) => {
