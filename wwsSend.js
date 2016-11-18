@@ -19,7 +19,6 @@ module.exports = function(RED) {
 			var listSpaces = config.listSpaces;
 			var spaceId = config.spaceId;
 			var allSpaces = config.allSpaces;
-			var content = msg.payload;
 			
 			msg.payload = "jwt :" + appId + "/" + appSecret + " Bearer {"+ jwtToken + "}";
 			if (allSpaces) {
@@ -30,7 +29,7 @@ module.exports = function(RED) {
 				    var space = objListSpaces[i];
 					console.log(space.title);
 					console.log(space.id);
-					sendMessage(content, space.id, jwtToken, (err, body) => {
+					sendMessage(msg, space.id, jwtToken, (err, body) => {
 						if (err) {
 							console.log (`Unable to send message : ${err}`);					
 						};
@@ -40,7 +39,7 @@ module.exports = function(RED) {
 				}
 			} else {
 				console.log("Sending to one space : " + spaceId);
-				sendMessage(content, spaceId, jwtToken, (err, body) => {
+				sendMessage(msg, spaceId, jwtToken, (err, body) => {
 					if (err) {
 						console.log (`Unable to send message : ${err}`);					
 					};
@@ -53,8 +52,13 @@ module.exports = function(RED) {
 	
 	RED.nodes.registerType("wwsSend", wwsSend);
 	
-	function sendMessage(text, spaceId, jwtToken, callback) {
+	function sendMessage(msg, spaceId, jwtToken, callback) {
 		var url = `https://api.watsonwork.ibm.com/v1/spaces/${spaceId}/messages`;
+		var title = msg.title || 'title';
+		var color = msg.color || '#0000FF';
+		var text = String(msg.payload) || 'text';
+		var name = msg.name || 'name';
+		var avatar = msg.avatar || 'https://avatars1.githubusercontent.com/u/22985179';
 		var body = {
 			headers: {
 				Authorization: `Bearer ${jwtToken}`
@@ -66,8 +70,13 @@ module.exports = function(RED) {
 				annotations: [{
 						type: 'generic',
 						version: 1.0,
-						color: '#6CB7FB',
+						title: title,
+						color: color,
 						text: text,
+						actor:{
+							name: name,
+							avatar: avatar
+						}
 				}]
 			}
 		};
