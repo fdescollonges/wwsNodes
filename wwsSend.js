@@ -20,7 +20,7 @@ module.exports = function(RED) {
 			var spaceId = config.spaceId;
 			var allSpaces = config.allSpaces;
 			
-			msg.payload = "jwt :" + appId + "/" + appSecret + " Bearer {"+ jwtToken + "}";
+			//msg.payload = "jwt :" + appId + "/" + appSecret + " Bearer {"+ jwtToken + "}";
 			if (allSpaces) {
 				console.log("Sending to all Spaces");
 				console.log(listSpaces);
@@ -58,7 +58,7 @@ module.exports = function(RED) {
 		var color = msg.color || '#0000FF';
 		var text = String(msg.payload) || 'text';
 		var name = msg.name || 'name';
-		var avatar = msg.avatar || 'https://raw.githubusercontent.com/fdescollonges/wwsNodes/master/icons/node-red.jpg';
+		var avatar = msg.avatar || 'https://raw.githubusercontent.com/fdescollonges/wwsNodes/master/icons/node-red.png';
 		var body = {
 			headers: {
 				Authorization: `Bearer ${jwtToken}`
