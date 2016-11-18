@@ -1,0 +1,19 @@
+Sécuriser NodeRed
+https://www.hardill.me.uk/wordpress/2015/05/11/securing-node-red/
+
+OpenSSL
+https://www.tbs-certificats.com/FAQ/fr/openssl-windows.html
+http://stackoverflow.com/questions/16658038/cant-open-config-file-usr-local-ssl-openssl-cnf-on-windows
+
+express get/post
+http://stackoverflow.com/questions/12006417/node-js-server-that-accepts-post-requests
+
+Securing NodeJS
+http://www.gettingcirrius.com/2012/06/securing-nodejs-and-express-with-ssl.html
+
+
+To allow unsecure certificat in NodeRed : 
+from command line you can do:
+set NODE_TLS_REJECT_UNAUTHORIZED=0
+npm install [mypackage]
+
