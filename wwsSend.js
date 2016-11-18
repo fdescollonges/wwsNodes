@@ -94,4 +94,13 @@ module.exports = function(RED) {
     	} 
     	res.json(listSpacesTmp);
     });
+    
+    RED.httpAdmin.get('/js/*', function(req, res){
+        var options = {
+            root: __dirname + '/js/',
+            dotfiles: 'deny'
+        };
+
+        res.sendFile(req.params[0], options);
+    });
 };

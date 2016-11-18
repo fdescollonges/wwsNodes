@@ -19,8 +19,9 @@
             return this.name||"WWS Send";
         }, 
         oneditprepare: function() {
-        	// Init all variables
+
         	console.log("Oneditprepare");
+    	    // Init all variables
         	oldValue = '';
         	nodeConfig = this;
         	listSpaces = nodeConfig.listSpaces;
@@ -32,9 +33,20 @@
         	// Store configuration informations
         	wwsApps = {};
         	
-        	// Init UI
-        	enable_spacelist($("#node-input-wwsApplications").val());
-        	show_spaces();
+            console.log("loading jscolor");
+            $.getScript('js/jscolor.min.js')
+            .done(function(data, textStatus, jqxhr) {
+ 
+	        	
+	        	// Init UI
+	        	enable_spacelist($("#node-input-wwsApplications").val());
+	        	show_spaces();
+        	})
+        	.fail(function(jqxhr, settings, exception ){
+                    console.log("Failed loading jscolor");
+                    console.log(exception);
+                    console.log(exception.stack);
+            });
         	
         	// Show textfield or select depending on checkbox
         	function enable_spacelist(configId) {
@@ -166,7 +178,11 @@
            <label>&nbsp;</label>
            <a class="btn" id="node-btn-spacesRefreshed" href="#" disabled><span>Refresh Space list</span></a>
         </div>
-
+        
+	<div class="form-row">
+        <label for="node-input-color"><i class="fa fa-list"></i> Border color</label>
+        <input class="jscolor" value="ab2567" type="text" id="node-input-color" placeholder="">
+    </div>
 
 </script>
 
