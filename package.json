@@ -17,6 +17,7 @@
     "node-red"     : {
         "nodes": {
             "wwsSend":"wwsSend.js",
+            "wwsReceive":"wwsReceive.js",
             "wwsApplications": "wwsApplications.js", 
             "wwsTestNode":"wwsTestNode.js"
         }

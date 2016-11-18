@@ -1,0 +1,210 @@
+<script type="text/javascript"> 
+    RED.nodes.registerType('wwsReceive',{ 
+        category: 'input',
+        color: '#a6bbcf',
+        defaults: {
+            name: {value:""},
+            wwsApplications: {value:"",type:"wwsApplications"},
+            allSpaces: {value:false},
+            listSpaces: {value:""},
+            spaceId: {value:""},
+            update: {value:""},
+            spacesRefreshed: {value:true}, 
+            whId: {value:"", required:true},
+            whSecret: {value:"", required:true}
+        },
+        inputs:0,
+        outputs:1,
+        icon: "wws.png",
+        align: 'left',
+        label: function() {
+            return this.name||"WWS Receive";
+        }, 
+        oneditprepare: function() {
+
+        
+        	// Init all variables
+        	console.log("Oneditprepare");
+        	var pathname = document.location.pathname;
+            if (pathname.slice(-1) != "/") {
+                pathname += "/";
+            }
+            
+        	var callback = location.protocol + "//" +
+                           location.hostname + 
+                           (location.port? ":"+location.port:"")+
+                           pathname + "wws/webhook/callback";
+            $("#callback").text(callback);
+        	oldValue = '';
+        	nodeConfig = this;
+        	listSpaces = nodeConfig.listSpaces;
+        	if (!listSpaces || listSpaces == '[]') {
+        		listSpaces = "No space found";
+        	}
+        	console.log(listSpaces);
+        	
+        	// Store configuration informations
+        	wwsApps = {};
+        	
+        	// Init UI
+        	enable_spacelist($("#node-input-wwsApplications").val());
+        	show_spaces();
+        	
+        	// Show textfield or select depending on checkbox
+        	function enable_spacelist(configId) {
+        		if ($("#node-input-allSpaces").is(':checked')) {
+            		$("#node-spaceId").hide();            		
+    	        	if (wwsApps[configId]) {
+    					$("#node-input-listSpaces").val(wwsApps[configId]);
+    					nodeConfig.listSpaces = wwsApps[configId];
+    	        	} else {
+    	        		$("#node-input-listSpaces").val(nodeConfig.listSpaces);
+    	        	} 
+    	        	show_spaces();
+            		$("#node-listId").show();
+            		nodeConfig.allSpaces = true;
+        		} else {
+    	        	if (wwsApps[configId]) {
+    					nodeConfig.listSpaces = wwsApps[configId];
+    	        	} else {
+    	        		$("#node-input-listSpaces").val(nodeConfig.listSpaces);
+    	        	} 
+    	        	show_spaces();
+            		$('#node-spaceId').show();
+            		$("#node-listId").hide();
+            		nodeConfig.allSpaces = false;
+        		}
+        	}
+        	
+        	// Refresh on checkbox clicks
+       		$("#node-input-allSpaces").on("click", function () {
+        		$("#node-input-update").val(Date.now);
+        		enable_spacelist($("#node-input-wwsApplications"));
+       		});
+
+			// Refresh on configuration changes
+			$("#node-input-wwsApplications").change(function () {
+	        		console.log("Config changed");
+	        		if (nodeConfig !== this) {
+	        			let tmpListSpaces = 'No space found';
+	        			if ((this.value !== oldValue) && (!wwsApps[this.value])) {
+                			$.getJSON('wwsApplication?id='+this.value,function(tmpListSpaces) {
+                				oldValue = this.value;
+	        					console.log(tmpListSpaces);
+	        					nodeConfig.listSpaces = tmpListSpaces;
+	        					enable_spacelist(this.value);
+                			});
+	        			} else {
+	        			  	nodeConfig.listSpaces = wwsApps[this.value];
+	        				enable_spacelist(this.value);
+	        			}
+					}
+			});
+			
+			// Update Select list of choices
+			function show_spaces(){
+				console.log("ShowSpaces");
+				var listSpaces = nodeConfig.listSpaces;
+				console.log(listSpaces);
+				$("#node-input-listSpaces").val(listSpaces);
+				var option='';
+				
+				// change Test here!
+				if (listSpaces=="No space found") {
+					option='<option value="">No space found</option>';
+					$('#node-input-spaceId').empty().append(option);
+				} else { 
+				try {
+					var objListSpaces = JSON.parse(listSpaces);
+					for(var i = 0; i < objListSpaces.length; i++) {
+					    var space = objListSpaces[i];
+				    	if (space.id == nodeConfig.spaceId) {
+				    	option += '<option value="'+ space.id + '" selected>' + space.title + '</option>';
+				    	} else {
+						option += '<option value="'+ space.id + '">' + space.title + '</option>';				    	
+				    	}
+				    	console.log(nodeConfig.spaceId);
+				    	console.log(space.id);
+				    	console.log(space.title);
+					}
+				$('#node-input-spaceId').empty().append(option);
+				}
+				catch (err) {
+					console.error("Unable to parse ListSpace : "+listSpaces);
+					console.error(err);
+					option='<option value="">No space found</option>';
+					$('#node-input-spaceId').empty().append(option);
+				}
+
+			}
+    	}
+    }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="wwsReceive">
+        <div class="form-row">
+            <p style="margin-top: 10px;">
+            <b>1.</b> 
+            <span>Register/Update this app at </span>
+            <a href="https://workspace.ibm.com/developer/apps" target="_blank" style="text-decoration:underline;">IBM Watson Workspace</a>
+            <span>using the following webhook callback URL :</span>
+            <div><code id="callback"></code></div>
+            </p>
+        </div>
+        <div class="form-row">
+            <p style="margin-top: 10px;"><b>2.</b> <span>Copy the app credentials here</span>:</p>
+        </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-wwsApplications"><i class="icon-tag"></i> WWS App</label>
+        <input type="text" id="node-input-wwsApplications" placeholder="Waston Work App">
+    </div>
+    <div class="form-row" id="node-allSpaces">
+        <label>&nbsp;</label>
+        <input type="checkbox" id="node-input-allSpaces" style="display: inline-block; width: auto; vertical-align: top;" checked>
+        <label for="node-input-allSpaces" style="width: 70%;"> Send to all spaces</label>
+    </div>
+    <div class="form-row" id="node-spaceId">
+        <label for="node-input-spaceId"><i class="fa fa-empire"></i><span> SpaceID</span></label>
+        <select id="node-input-spaceId" style="width:300px !important">
+<!--
+			<option value="580e30c3e4b0e0daf7d77b87">FDSpace</option>
+			<option value="580f725de4b0279617b9fe8b">TestAPI</option> 
+-->
+
+		</select>
+    </div>
+    <div class="form-row" id="node-listId">
+        <label for="node-input-listSpaces"><i class="fa fa-list"></i> Spaces</label>
+        <input type="text" id="node-input-listSpaces" placeholder="" readonly>
+    </div>    
+
+	<div class="form-row" style="display:none !important">
+        <label for="node-input-update"><i class="fa fa-list"></i> Timestamp</label>
+        <input type="text" id="node-input-update" placeholder="">
+    </div>
+
+        <div class="form-row" id="node-spacesRefreshed" style="display:none">
+           <label>&nbsp;</label>
+           <a class="btn" id="node-btn-spacesRefreshed" href="#" disabled><span>Refresh Space list</span></a>
+        </div>
+
+
+</script>
+
+<script type="text/x-red" data-help-name="wwsReceive">
+    <p>A node to send a message to IBM Watson Workspace using IBM Watson Work Services</p>
+    <p>It uses : </p>
+    <li>msg.payload : text message</li>
+    <li>msg.color : color of the border</li>
+    <li>msg.title : title of the message</li>
+    <li>msg.name : sender of the message</li>
+    <li>msg.avatar : url of the picture of the sender</li> 
+    <p><p><p>Sample :</p>
+    <img src="icons/message.jpg" alt="message sample">
+
+</script>
