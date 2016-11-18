@@ -49,7 +49,7 @@ module.exports = function(RED) {
 	}
 
 	wwsApplications.prototype.getSpaces = function(token, cb) {
-		console.log('In get spaces');
+		//console.log('In get spaces');
 		var _url = 'https://workspace.ibm.com/graphql?query=query%20getSpaceId%7Bspaces(first%3A200)%7Bitems%7Bid%20title%7D%7D%7D%0A&operationName=getSpaceId';
 		var _headers = {
 				//Authorization: `Bearer ${token}`,
@@ -91,7 +91,8 @@ module.exports = function(RED) {
 			var buffer = new Buffer(string);
 			var toBase64 = buffer.toString('base64');
 			var authorization = "Basic "+toBase64;
-			console.log('Getting token : ' +authorization);
+//			console.log('Getting token : ' +authorization);
+			console.log('Getting token');			
 			request.post('https://api.watsonwork.ibm.com/oauth/token', {
 				headers : {
 					"Content-Type": "application/x-www-form-urlencoded",
