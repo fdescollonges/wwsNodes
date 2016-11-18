@@ -12,7 +12,7 @@ module.exports = function(RED) {
 		this.wwsApplications = RED.nodes.getNode(config.wwsApplications);
 
 		this.on('input', function(msg) {
-			console.log("In wwsSend");
+			//console.log("In wwsSend");
 			var appId = this.wwsApplications.appId;
 			var appSecret = this.wwsApplications.appSecret;
 			var jwtToken = this.wwsApplications.accessToken;
@@ -27,16 +27,15 @@ module.exports = function(RED) {
 				var objListSpaces = JSON.parse(listSpaces);
 				for(var i = 0; i < objListSpaces.length; i++) {
 				    var space = objListSpaces[i];
-					console.log(space.title);
-					console.log(space.id);
+					console.log("Sending to : "+ space.title +"{"+space.id+"}");
 					sendMessage(msg, space.id, jwtToken, (err, body) => {
 						if (err) {
-							node.error("Unable to send the message " + msg.payload);
+							node.error("Unable to send the message : "+msg.payload+" (" + err + ")");
 							node.status({fill:"red",shape:"dot",text:"Not sent"});
-							console.log (`Unable to send message : ${err}`);					
+							//console.log (`Unable to send message : ${err}`);					
 						} else { 
 							node.status({fill:"green",shape:"dot",text:"Msg sent"});
-							console.log (`Message sent : {body}`);
+							//console.log (`Message sent : {body}`);
 						};
 					});
 					
@@ -45,7 +44,7 @@ module.exports = function(RED) {
 				console.log("Sending to one space : " + spaceId);
 				sendMessage(msg, spaceId, jwtToken, (err, body) => {
 					if (err) {
-						node.error("Unable to send the message " + msg.payload);
+						node.error("Unable to send the message : "+msg.payload+" (" + err + ")");
 						node.status({fill:"red",shape:"dot",text:"Not sent"});
 						//console.log (`Unable to send message : ${err}`);					
 					} else {
@@ -96,10 +95,6 @@ module.exports = function(RED) {
 				if (!err) { 
 					console.error(`Error sending message to ${spaceId} with return code : ${res.statusCode}`); 
 					callback(`Return code : ${res.statusCode}`);
-				}
-				else { 
-					console.error(`Error sending message to ${spaceId} with error : ${err}`);
-					callback(err);
 				}
 			} else {
 				callback(null, res.body);
