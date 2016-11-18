@@ -43,7 +43,7 @@ module.exports = function(RED) {
 						});
 						
 					}
-				} catch {
+				} catch (err) {
 					node.error("Unable to send the message : "+msg.payload+" (No spaces)");
 					node.status({fill:"red",shape:"dot",text:"Not sent"});
 				}
