@@ -18,17 +18,13 @@ module.exports = function(RED) {
 				(err, token) => {
 					if (err) {
 						console.error('Initialize : Failed');
-						node.error("Unable to get token");
-						node.status({fill:"red",shape:"dot",text:"No Token"});
 					}			
-					console.log('Got new token : '+token);
+					//console.log('Got new token');
 					this.accessToken=token;
 					node.getSpaces(token,
 							(err, spaces) => {
 								if (err) {
 									console.error('Unable to get spaces : ' + err);
-									node.error("Unable to get spaces");
-									node.status({fill:"red",shape:"dot",text:"No spaces"});
 								}
 								console.log('Got all spaces :' + JSON.stringify(spaces));
 								node.listSpaces = JSON.stringify(spaces);
