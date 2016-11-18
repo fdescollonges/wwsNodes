@@ -58,7 +58,7 @@ module.exports = function(RED) {
 		var color = msg.color || '#0000FF';
 		var text = String(msg.payload) || 'text';
 		var name = msg.name || 'name';
-		var avatar = msg.avatar || 'https://avatars1.githubusercontent.com/u/22985179';
+		var avatar = msg.avatar || 'https://raw.githubusercontent.com/fdescollonges/wwsNodes/master/icons/node-red.jpg';
 		var body = {
 			headers: {
 				Authorization: `Bearer ${jwtToken}`
