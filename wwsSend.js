@@ -19,11 +19,11 @@ module.exports = function(RED) {
 			var listSpaces = config.listSpaces;
 			var spaceId = config.spaceId;
 			var allSpaces = config.allSpaces;
+			var node = this;
 			
 			//msg.payload = "jwt :" + appId + "/" + appSecret + " Bearer {"+ jwtToken + "}";
 			if (allSpaces) {
 				console.log("Sending to all Spaces");
-				console.log(listSpaces);
 				var objListSpaces = JSON.parse(listSpaces);
 				for(var i = 0; i < objListSpaces.length; i++) {
 				    var space = objListSpaces[i];
@@ -31,9 +31,13 @@ module.exports = function(RED) {
 					console.log(space.id);
 					sendMessage(msg, space.id, jwtToken, (err, body) => {
 						if (err) {
+							node.error("Unable to send the message " + msg.payload);
+							node.status({fill:"red",shape:"dot",text:"Not sent"});
 							console.log (`Unable to send message : ${err}`);					
+						} else { 
+							node.status({fill:"green",shape:"dot",text:"Msg sent"});
+							console.log (`Message sent : {body}`);
 						};
-						console.log('Message Posted : '+ body);
 					});
 					
 				}
@@ -41,9 +45,13 @@ module.exports = function(RED) {
 				console.log("Sending to one space : " + spaceId);
 				sendMessage(msg, spaceId, jwtToken, (err, body) => {
 					if (err) {
-						console.log (`Unable to send message : ${err}`);					
+						node.error("Unable to send the message " + msg.payload);
+						node.status({fill:"red",shape:"dot",text:"Not sent"});
+						//console.log (`Unable to send message : ${err}`);					
+					} else {
+						node.status({fill:"green",shape:"dot",text:"Msg sent"});
+						//console.log (`Message sent : ${body}`);
 					};
-					console.log('Message Posted : '+ body);
 				});
 			}
 
@@ -81,22 +89,28 @@ module.exports = function(RED) {
 			}
 		};
 
-		console.log('Responding to ' + url + ' with ' + JSON.stringify(body));
+		//console.log('Responding to ' + url + ' with ' + JSON.stringify(body));
 
 		request.post(url, body, (err, res) => {
 			if (err || res.statusCode !== 201) {
-				console.error(`Error sending message to ${spaceId} ${err}`);
-				callback(err);
-				return;
+				if (!err) { 
+					console.error(`Error sending message to ${spaceId} with return code : ${res.statusCode}`); 
+					callback(`Return code : ${res.statusCode}`);
+				}
+				else { 
+					console.error(`Error sending message to ${spaceId} with error : ${err}`);
+					callback(err);
+				}
+			} else {
+				callback(null, res.body);
 			}
-			callback(null, res.body);
 		});
 	}
 	 
     RED.httpAdmin.get('/wwsApplication/', function(req, res){
     	console.log("Getting wwsApplications data for "+req.query.id);
     	let wwsAppTmp = RED.nodes.getNode(req.query.id);
-    	console.log(wwsAppTmp);
+    	//console.log(wwsAppTmp);
 		let listSpacesTmp = 'No space found';
     	if (wwsAppTmp) {
     		listSpacesTmp = wwsAppTmp.listSpaces;
