@@ -5,11 +5,12 @@
         defaults: {
             name: {value:""},
             wwsApplications: {value:"",type:"wwsApplications"},
-            allSpaces: {value:false},
-            listSpaces: {value:""},
-            spaceId: {value:""},
-            update: {value:""},
-            spacesRefreshed: {value:true}, 
+            //allSpaces: {value:false},
+            //listSpaces: {value:""},
+            //spaceId: {value:""},
+            //update: {value:""},
+            //spacesRefreshed: {value:true}, 
+            callbackUrl : {value:"", required:true},
             whId: {value:"", required:true},
             whSecret: {value:"", required:true}
         },
@@ -163,48 +164,25 @@
         <label for="node-input-wwsApplications"><i class="icon-tag"></i> WWS App</label>
         <input type="text" id="node-input-wwsApplications" placeholder="Waston Work App">
     </div>
-    <div class="form-row" id="node-allSpaces">
-        <label>&nbsp;</label>
-        <input type="checkbox" id="node-input-allSpaces" style="display: inline-block; width: auto; vertical-align: top;" checked>
-        <label for="node-input-allSpaces" style="width: 70%;"> Send to all spaces</label>
+     <div class="form-row">
+        <label for="node-input-callbackUrl"><i class="icon-tag"></i> Callback URL</label>
+        <input type="text" id="node-input-callbackUrl" placeholder="Callback URL">
+    </div>   
+    <div class="form-row">
+        <label for="node-input-whId"><i class="icon-tag"></i> Webhook ID</label>
+        <input type="text" id="node-input-whId" placeholder="Webhook ID">
     </div>
-    <div class="form-row" id="node-spaceId">
-        <label for="node-input-spaceId"><i class="fa fa-empire"></i><span> SpaceID</span></label>
-        <select id="node-input-spaceId" style="width:300px !important">
-<!--
-			<option value="580e30c3e4b0e0daf7d77b87">FDSpace</option>
-			<option value="580f725de4b0279617b9fe8b">TestAPI</option> 
--->
-
-		</select>
-    </div>
-    <div class="form-row" id="node-listId">
-        <label for="node-input-listSpaces"><i class="fa fa-list"></i> Spaces</label>
-        <input type="text" id="node-input-listSpaces" placeholder="" readonly>
-    </div>    
-
-	<div class="form-row" style="display:none !important">
-        <label for="node-input-update"><i class="fa fa-list"></i> Timestamp</label>
-        <input type="text" id="node-input-update" placeholder="">
+    <div class="form-row">
+        <label for="node-input-whSecret"><i class="icon-tag"></i> Webhook secret</label>
+        <input type="text" id="node-input-whSecret" placeholder="Webhook Secret">
     </div>
 
-        <div class="form-row" id="node-spacesRefreshed" style="display:none">
-           <label>&nbsp;</label>
-           <a class="btn" id="node-btn-spacesRefreshed" href="#" disabled><span>Refresh Space list</span></a>
-        </div>
-
-
+    <div class="form-row" id="node-spacesRefreshed" style="display:none">
+         <label>&nbsp;</label>
+         <a class="btn" id="node-btn-spacesRefreshed" href="#" disabled><span>Refresh Space list</span></a>
+    </div>
 </script>
 
 <script type="text/x-red" data-help-name="wwsReceive">
-    <p>A node to send a message to IBM Watson Workspace using IBM Watson Work Services</p>
-    <p>It uses : </p>
-    <li>msg.payload : text message</li>
-    <li>msg.color : color of the border</li>
-    <li>msg.title : title of the message</li>
-    <li>msg.name : sender of the message</li>
-    <li>msg.avatar : url of the picture of the sender</li> 
-    <p><p><p>Sample :</p>
-    <img src="icons/message.jpg" alt="message sample">
-
+    <p>A node to receive a message from IBM Watson Workspace using IBM Watson Work Services</p>
 </script>

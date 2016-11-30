@@ -1,11 +1,17 @@
 {
     "name"         : "node-red-contrib-wwsNodes",
-    "version"      : "0.1.4",
+    "version"      : "0.1.5",
     "description"  : "Draft of useful nodes for Watson Work Services",
     "dependencies": {
     	"url":"*",
     	"request":"*", 
-    	"jsonwebtoken":"*"
+    	"jsonwebtoken":"*", 
+    	"fs":"*",
+    	"http":"*",
+    	"https":"*",
+    	"express":"*", 
+    	"body-parser":"*",
+    	"crypto":"*"
     },
     "keywords": [ "wws", "node-red" ],
       "author": "Franck Descollonges <franck_descollonges@fr.ibm.com>",
