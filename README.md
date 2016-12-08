@@ -11,9 +11,14 @@ This configuration node can be reused across multiple WWS nodes
 #### wwsSend
 Send a message to one or all spaces
 Choose to send the incoming payload in all spaces or choose one space in the list
+
+#### wwsReceive
+Receive a message from Watson Work Services
+Manage the Webhook subscription and the messages reception
  
 ### Usage
 To be used with Node-RED
 
 ### Developing
 Under development
+
