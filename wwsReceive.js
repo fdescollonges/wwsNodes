@@ -31,6 +31,7 @@ module.exports = function(RED) {
 
 		node.app = express();
 		node.app.use(rawBody);
+		node.app.enable('trust proxy');
 
 		// GET Method for testing purpose
 		node.app.get(node.callbackUrl, function handleGet(req, res){
