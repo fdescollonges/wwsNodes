@@ -11,6 +11,8 @@ const https = require('https');
 const express = require('express');
 const bparser = require('body-parser');
 const crypto = require('crypto');
+const cfenv = require("cfenv");
+var appEnv = cfenv.getAppEnv();
 
 
 module.exports = function(RED) {
@@ -28,6 +30,7 @@ module.exports = function(RED) {
 		this.whSecret = config.whSecret;
 		var node = this;
 		console.log("config.whSecret:"+node.whSecret);
+		console.log("process.env.VCAP_APP_PORT : "+process.env.VCAP_APP_PORT);
 
 		node.app = express();
 		node.app.use(rawBody);
@@ -35,7 +38,7 @@ module.exports = function(RED) {
 
 		// GET Method for testing purpose
 		node.app.get(node.callbackUrl, function handleGet(req, res){
-		    console.log('GET /')
+		    console.log('GET /');
 		    //var html = '<html><body><form method="post" action="https://vfea.i234.me:8443/wws/wh/callback">Name: <input type="text" name="name" /><input type="submit" value="Submit" /></form></body>';
 		    //var html = fs.readFileSync('index.html');
 		    var html;
@@ -85,7 +88,7 @@ module.exports = function(RED) {
 			if (err) {
 				console.log("Unable to start the server on : "+node.urlCallback);
 			} else {
-				console.log("Server is listening : "+server);
+				console.log("Server is listening : "+JSON.stringify(server.address()));
 				node.server = server;
 			}
 		});
@@ -121,23 +124,46 @@ module.exports = function(RED) {
 		var server;
 		if (node.requireHttps) {
 			try {
-			console.log("Starting callback (https) : "+ node.callbackUrl+':'+node.callbackPort);
-			const privateKey  = fs.readFileSync('node_modules/node-red-contrib-wwsNodes/ssl/privkey.pem', 'utf8');
-			const certificate = fs.readFileSync('node_modules/node-red-contrib-wwsNodes/ssl/cert.pem', 'utf8');
-			const credentials = {key: privateKey, cert: certificate, rejectUnauthorized: false };
-			node.httpsServer = https.createServer(credentials, node.app);
-	    	server = node.httpsServer.listen(node.callbackPort);
-			callback(null, server);
+
+			if (appEnv.isLocal) {
+				console.log("Starting local callback (https) : "+ node.callbackUrl+':'+node.callbackPort);
+				const privateKey  = fs.readFileSync('node_modules/node-red-contrib-wwsNodes/ssl/privkey.pem', 'utf8');
+				const certificate = fs.readFileSync('node_modules/node-red-contrib-wwsNodes/ssl/cert.pem', 'utf8');
+				const credentials = {key: privateKey, cert: certificate, rejectUnauthorized: false };
+				node.httpsServer = https.createServer(credentials, node.app);
+		    	server = node.httpsServer.listen(node.callbackPort, appEnv.bind, function(){
+		    	    console.log("server starting locally on " + appEnv.url +" : "+ appEnv.bind);	
+					callback(null, server);
+
+		    	});
+	    	} else {
+	    		var port = (process.env.VCAP_APP_PORT || node.callbackPort);
+				console.log("Starting CF callback (https) : "+ node.callbackUrl+':'+port);
+				node.httpsServer = https.createServer(node.app);
+		    	server = node.httpsServer.listen(port, function(){
+		    	    console.log("server starting in CF on port : "+server.address().port);	 
+					callback(null, server);
+		    	});
+	    	}
 
 			} catch (e) {
 				console.log("Unable to start HTTPS server : "+ e);
 				callback(e);
 			}
 		} else {
+    		var port;
+			if (appEnv.isLocal) {
+				port = node.callbackPort;
+			} else {
+				port = (process.env.VCAP_APP_PORT || node.callbackPort);
+			}
 			console.log("Starting callback (http) : "+ node.callbackUrl+':'+node.callbackPort);
 			node.httpServer = http.createServer(node.app);
-	    	server = node.httpServer.listen(node.callbackPort);
-			callback(null, server);
+	    	server = node.httpServer.listen(node.callbackPort, appEnv.bind, function(){
+	    	    console.log("server starting on " + appEnv.url +" : "+ appEnv.bind);	
+				callback(null, server);
+
+	    	});
 		}
 	}
 	
