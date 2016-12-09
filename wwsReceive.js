@@ -11,81 +11,134 @@ const https = require('https');
 const express = require('express');
 const bparser = require('body-parser');
 const crypto = require('crypto');
-const privateKey  = fs.readFileSync('node_modules/node-red-contrib-wwsNodes/ssl/privkey.pem', 'utf8');
-const certificate = fs.readFileSync('node_modules/node-red-contrib-wwsNodes/ssl/cert.pem', 'utf8');
-const credentials = {key: privateKey, cert: certificate, rejectUnauthorized: false };
+
 
 module.exports = function(RED) {
 	function wwsReceive(config) {
 		RED.nodes.createNode(this, config);
 		this.wwsApplications = RED.nodes.getNode(config.wwsApplications);
 		console.log("In wwsReceive");
-		var appId = this.wwsApplications.appId;
-		var appSecret = this.wwsApplications.appSecret;
-		var jwtToken = this.wwsApplications.accessToken;
-		var callbackUrl = config.callbackUrl;
-		var whId = config.whId;
-		var whSecret = config.whSecret;
-		console.log("config.whSecret:"+whSecret);
+		this.appId = this.wwsApplications.appId;
+		this.appSecret = this.wwsApplications.appSecret;
+		this.jwtToken = this.wwsApplications.accessToken;
+		this.callbackUrl = config.callbackUrl;
+		this.callbackPort = config.callbackPort;
+		this.requireHttps = config.requireHttps;
+		this.whId = config.whId;
+		this.whSecret = config.whSecret;
 		var node = this;
+		console.log("config.whSecret:"+node.whSecret);
 
-		var app = express();
-		app.use(rawBody);
+		node.app = express();
+		node.app.use(rawBody);
 
-		// your express configuration here
-
-		var httpServer = http.createServer(app);
-		var httpsServer = https.createServer(credentials, app);
-		
-		app.get('/wws/wh/callback', function(req, res){
+		// GET Method for testing purpose
+		node.app.get(node.callbackUrl, function handleGet(req, res){
 		    console.log('GET /')
-		    var html = '<html><body><form method="post" action="https://vfea.i234.me:8443/wws/wh/callback">Name: <input type="text" name="name" /><input type="submit" value="Submit" /></form></body>';
+		    //var html = '<html><body><form method="post" action="https://vfea.i234.me:8443/wws/wh/callback">Name: <input type="text" name="name" /><input type="submit" value="Submit" /></form></body>';
 		    //var html = fs.readFileSync('index.html');
+		    var html;
+		    if (node.requireHttps) {
+		    	html = '<html><body>Server running on : https://'+req.headers.host+node.callbackUrl+':'+node.callbackPort+'</form></body>';
+		    } else {
+		    	html = '<html><body>Server running on : http://'+req.headers.host+node.callbackUrl+':'+node.callbackPort+'</form></body>';		    	
+		    }
 		    res.writeHead(200, {'Content-Type': 'text/html'});
 		    res.end(html);
 		});
 
-		app.post('/wws/wh/callback', function(req, res){
-			
+		// POST Method to handle authorization and callback from Watson Work Services
+		node.app.post(node.callbackUrl, function handlePost(req, res){
 			console.log("In Callback");
 			console.log("Req.header:"+req.headers);
 			console.log("Req.rawBody:"+req.rawBody);
-			console.log("whSecret:"+whSecret);
+			console.log("whSecret:"+node.whSecret);
 			console.log("req.get('X-OUTBOUND-TOKEN'):"+req.get('X-OUTBOUND-TOKEN'));
 			
-			  if (!verifySender(req.headers, req.rawBody, whSecret, req.get('X-OUTBOUND-TOKEN'))) {
-			      console.log("ERROR: Cannot verify caller! -------------");
-			      console.log(req.rawBody.toString());
-			      res.status(200).end();
-			      return;
-			  }
-			  
-			  var body = JSON.parse(req.rawBody.toString());
-			  var eventType = body.type;
-			  if (eventType === "verification") {
-			      handleVerificationRequest(res, body.challenge, whSecret);
-			      console.log("INFO: Verification request processed");
-			      return;
-			  }
-
-			  // Acknowledge we received and processed notification to avoid getting sent the same event again
-			  res.status(200).end();
-
-
-			  if (body.userId === appId) {
-			    console.log("INFO: Skipping our own message Body: " + JSON.stringify(body));
+			if (!verifySender(req.headers, req.rawBody, node.whSecret, req.get('X-OUTBOUND-TOKEN'))) {
+				console.log("ERROR: Cannot verify caller! -------------");
+			    console.log(req.rawBody.toString());
+			    res.status(200).end();
 			    return;
-			  }
-			  var msg = { payload:body };
-			  node.send(msg);
-			  
+			}
+			var body = JSON.parse(req.rawBody.toString());
+			var eventType = body.type;
+			if (eventType === "verification") {
+			    handleVerificationRequest(res, body.challenge, node.whSecret);
+			    console.log("INFO: Verification request processed");
+			    return;
+			}
+            
+			// Acknowledge we received and processed notification to avoid getting sent the same event again
+			res.status(200).end();
+			if (body.userId === node.appId) {
+				console.log("INFO: Skipping our own message Body: " + JSON.stringify(body));
+			    return;
+			}
+			// passing the message to next Node
+			var msg = { payload:body };
+			node.send(msg);  
 		});
-
-		httpServer.listen(8080);
-		httpsServer.listen(8443);
+		
+		startServer(node, function (err, server){
+			if (err) {
+				console.log("Unable to start the server on : "+node.urlCallback);
+			} else {
+				console.log("Server is listening : "+server);
+				node.server = server;
+			}
+		});
+		  
+	    this.on("close",function() {
+	    	console.log("On Close : Stopping the server");
+	        var node = this;
+	        console.log("RequireHttps:"+node.requireHttps);
+	        var routes = node.app._router.stack;
+	        routes.forEach(removeMiddlewares);
+	        function removeMiddlewares(route, i, routes) {
+	            switch (route.handle.name) {
+	                case 'handlePost':
+	                    routes.splice(i, 1);
+	                case 'handleGet':
+	                    routes.splice(i, 1);
+	            }
+	            if (route.route)
+	                route.route.stack.forEach(removeMiddlewares);
+	        }
+	    	if (node.requireHttps) {
+	    		node.server.close();
+	    	} else {
+	    		node.server.close();
+	    	}
+	     });
 	}
 	
 	RED.nodes.registerType("wwsReceive", wwsReceive);
+	
+	
+	function startServer(node, callback) {	
+		var server;
+		if (node.requireHttps) {
+			try {
+			console.log("Starting callback (https) : "+ node.callbackUrl+':'+node.callbackPort);
+			const privateKey  = fs.readFileSync('node_modules/node-red-contrib-wwsNodes/ssl/privkey.pem', 'utf8');
+			const certificate = fs.readFileSync('node_modules/node-red-contrib-wwsNodes/ssl/cert.pem', 'utf8');
+			const credentials = {key: privateKey, cert: certificate, rejectUnauthorized: false };
+			node.httpsServer = https.createServer(credentials, node.app);
+	    	server = node.httpsServer.listen(node.callbackPort);
+			callback(null, server);
+
+			} catch (e) {
+				console.log("Unable to start HTTPS server : "+ e);
+				callback(e);
+			}
+		} else {
+			console.log("Starting callback (http) : "+ node.callbackUrl+':'+node.callbackPort);
+			node.httpServer = http.createServer(node.app);
+	    	server = node.httpServer.listen(node.callbackPort);
+			callback(null, server);
+		}
+	}
 	
 	function sendMessage(msg, spaceId, jwtToken, callback) {
 		var url = `https://api.watsonwork.ibm.com/v1/spaces/${spaceId}/messages`;
@@ -131,10 +184,49 @@ module.exports = function(RED) {
 		});
 	}
 	
+	function verifySender(headers, rawbody, whSecret, headerToken) {
+	    var expectedToken = crypto
+	        .createHmac("sha256", whSecret)
+	        .update(rawbody)
+	        .digest("hex");
 
+	    if (expectedToken === headerToken) {
+	        return Boolean(true);
+	    } else {
+	        return Boolean(false);
+	    }
+	}
 
+	function handleVerificationRequest(response, challenge, whSecret) {
+	    var responseBodyObject = {
+	        "response": challenge
+	    };
+	    var responseBodyString = JSON.stringify(responseBodyObject);
 
+	    var responseToken = crypto
+	        .createHmac("sha256", whSecret)
+	        .update(responseBodyString)
+	        .digest("hex");
+
+	    response.writeHead(200, {
+	        "Content-Type": "application/json; charset=utf-8",
+	        "X-OUTBOUND-TOKEN": responseToken
+	    });
+
+	    response.end(responseBodyString);
+	}
 	
+	function rawBody(req, res, next) {
+	    var buffers = [];
+	    req.on("data", function(chunk) {
+	        buffers.push(chunk);
+	    });
+	    req.on("end", function() {
+	        req.rawBody = Buffer.concat(buffers);
+	        next();
+	    });
+	}
+};
  /*   
  // Verify Watson Work request signature
     export const verify = (wsecret) => (req, res, buf, encoding) => {
@@ -193,46 +285,3 @@ module.exports = function(RED) {
       });
     };
     */
-	function verifySender(headers, rawbody, whSecret, headerToken) {
-	    var expectedToken = crypto
-	        .createHmac("sha256", whSecret)
-	        .update(rawbody)
-	        .digest("hex");
-
-	    if (expectedToken === headerToken) {
-	        return Boolean(true);
-	    } else {
-	        return Boolean(false);
-	    }
-	}
-
-	function handleVerificationRequest(response, challenge, whSecret) {
-	    var responseBodyObject = {
-	        "response": challenge
-	    };
-	    var responseBodyString = JSON.stringify(responseBodyObject);
-
-	    var responseToken = crypto
-	        .createHmac("sha256", whSecret)
-	        .update(responseBodyString)
-	        .digest("hex");
-
-	    response.writeHead(200, {
-	        "Content-Type": "application/json; charset=utf-8",
-	        "X-OUTBOUND-TOKEN": responseToken
-	    });
-
-	    response.end(responseBodyString);
-	}
-	
-	function rawBody(req, res, next) {
-	    var buffers = [];
-	    req.on("data", function(chunk) {
-	        buffers.push(chunk);
-	    });
-	    req.on("end", function() {
-	        req.rawBody = Buffer.concat(buffers);
-	        next();
-	    });
-	}
-}

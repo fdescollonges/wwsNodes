@@ -8,11 +8,14 @@
             //allSpaces: {value:false},
             //listSpaces: {value:""},
             //spaceId: {value:""},
-            //update: {value:""},
-            //spacesRefreshed: {value:true}, 
+            update: {value:""},
+            //httpsRefreshed: {value:true}, 
             callbackUrl : {value:"", required:true},
+            callbackPort : {value:"", required:true},
+            requireHttps : {value:false, required:true},
             whId: {value:"", required:true},
             whSecret: {value:"", required:true}
+            
         },
         inputs:0,
         outputs:1,
@@ -78,9 +81,8 @@
         	}
         	
         	// Refresh on checkbox clicks
-       		$("#node-input-allSpaces").on("click", function () {
+       		$("#node-input-requireHttps").on("click", function () {
         		$("#node-input-update").val(Date.now);
-        		enable_spacelist($("#node-input-wwsApplications"));
        		});
 
 			// Refresh on configuration changes
@@ -168,6 +170,15 @@
         <label for="node-input-callbackUrl"><i class="icon-tag"></i> Callback URL</label>
         <input type="text" id="node-input-callbackUrl" placeholder="Callback URL">
     </div>   
+     <div class="form-row">
+        <label for="node-input-callbackPort"><i class="icon-tag"></i> Callback Port</label>
+        <input type="text" id="node-input-callbackPort" placeholder="Callback Port" value="goo>
+    </div>   
+	<div class="form-row" id="node-requireHttps">
+        <label>&nbsp;</label>
+        <input type="checkbox" id="node-input-requireHttps" style="display: inline-block; width: auto; vertical-align: top;" >
+        <label for="node-input-requireHttps" style="width: 70%;"> Require HTTPS</label>
+    </div>
     <div class="form-row">
         <label for="node-input-whId"><i class="icon-tag"></i> Webhook ID</label>
         <input type="text" id="node-input-whId" placeholder="Webhook ID">
@@ -177,10 +188,11 @@
         <input type="text" id="node-input-whSecret" placeholder="Webhook Secret">
     </div>
 
-    <div class="form-row" id="node-spacesRefreshed" style="display:none">
-         <label>&nbsp;</label>
-         <a class="btn" id="node-btn-spacesRefreshed" href="#" disabled><span>Refresh Space list</span></a>
+	<div class="form-row" style="display:none !important">
+        <label for="node-input-update"><i class="fa fa-list"></i> Timestamp</label>
+        <input type="text" id="node-input-update" placeholder="">
     </div>
+
 </script>
 
 <script type="text/x-red" data-help-name="wwsReceive">
