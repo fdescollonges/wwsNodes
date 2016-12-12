@@ -27,9 +27,9 @@
             update: {value:""},
             //httpsRefreshed: {value:true}, 
             callbackUrl : {value:"", required:true},
-            callbackPort : {value:"", required:true},
-            requireHttps : {value:false, required:true},
-            whId: {value:"", required:true},
+            callbackPort : {value:"", required:false},
+            requireHttps : {value:false, required:false},
+            whId: {value:"", required:false},
             whSecret: {value:"", required:true}
             
         },
@@ -38,7 +38,7 @@
         icon: "wws.png",
         align: 'left',
         label: function() {
-            return this.name||"WWS Receive";
+            return this.name||"WWS In";
         }, 
         oneditprepare: function() {
 
