@@ -1,0 +1,216 @@
+<!--
+  Copyright 2013, 2016 IBM Corp.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+
+<script type="text/javascript"> 
+    RED.nodes.registerType('wwsIn',{ 
+        category: 'input',
+        color: '#a6bbcf',
+        defaults: {
+            name: {value:""},
+            wwsApplications: {value:"",type:"wwsApplications"},
+            //allSpaces: {value:false},
+            //listSpaces: {value:""},
+            //spaceId: {value:""},
+            update: {value:""},
+            //httpsRefreshed: {value:true}, 
+            callbackUrl : {value:"", required:true},
+            callbackPort : {value:"", required:true},
+            requireHttps : {value:false, required:true},
+            whId: {value:"", required:true},
+            whSecret: {value:"", required:true}
+            
+        },
+        inputs:0,
+        outputs:1,
+        icon: "wws.png",
+        align: 'left',
+        label: function() {
+            return this.name||"WWS Receive";
+        }, 
+        oneditprepare: function() {
+
+        
+        	// Init all variables
+        	console.log("Oneditprepare");
+        	var pathname = document.location.pathname;
+            if (pathname.slice(-1) != "/") {
+                pathname += "/";
+            }
+            
+        	var callback = location.protocol + "//" +
+                           location.hostname + 
+                           (location.port? ":"+location.port:"")+
+                           pathname + "wws/webhook/callback";
+            $("#callback").text(callback);
+        	oldValue = '';
+        	nodeConfig = this;
+        	listSpaces = nodeConfig.listSpaces;
+        	if (!listSpaces || listSpaces == '[]') {
+        		listSpaces = "No space found";
+        	}
+        	console.log(listSpaces);
+        	
+        	// Store configuration informations
+        	wwsApps = {};
+        	
+        	// Init UI
+        	enable_spacelist($("#node-input-wwsApplications").val());
+        	show_spaces();
+        	
+        	// Show textfield or select depending on checkbox
+        	function enable_spacelist(configId) {
+        		if ($("#node-input-allSpaces").is(':checked')) {
+            		$("#node-spaceId").hide();            		
+    	        	if (wwsApps[configId]) {
+    					$("#node-input-listSpaces").val(wwsApps[configId]);
+    					nodeConfig.listSpaces = wwsApps[configId];
+    	        	} else {
+    	        		$("#node-input-listSpaces").val(nodeConfig.listSpaces);
+    	        	} 
+    	        	show_spaces();
+            		$("#node-listId").show();
+            		nodeConfig.allSpaces = true;
+        		} else {
+    	        	if (wwsApps[configId]) {
+    					nodeConfig.listSpaces = wwsApps[configId];
+    	        	} else {
+    	        		$("#node-input-listSpaces").val(nodeConfig.listSpaces);
+    	        	} 
+    	        	show_spaces();
+            		$('#node-spaceId').show();
+            		$("#node-listId").hide();
+            		nodeConfig.allSpaces = false;
+        		}
+        	}
+        	
+        	// Refresh on checkbox clicks
+       		$("#node-input-requireHttps").on("click", function () {
+        		$("#node-input-update").val(Date.now);
+       		});
+
+			// Refresh on configuration changes
+			$("#node-input-wwsApplications").change(function () {
+	        		console.log("Config changed");
+	        		if (nodeConfig !== this) {
+	        			let tmpListSpaces = 'No space found';
+	        			if ((this.value !== oldValue) && (!wwsApps[this.value])) {
+                			$.getJSON('wwsApplication?id='+this.value,function(tmpListSpaces) {
+                				oldValue = this.value;
+	        					console.log(tmpListSpaces);
+	        					nodeConfig.listSpaces = tmpListSpaces;
+	        					enable_spacelist(this.value);
+                			});
+	        			} else {
+	        			  	nodeConfig.listSpaces = wwsApps[this.value];
+	        				enable_spacelist(this.value);
+	        			}
+					}
+			});
+			
+			// Update Select list of choices
+			function show_spaces(){
+				console.log("ShowSpaces");
+				var listSpaces = nodeConfig.listSpaces;
+				console.log(listSpaces);
+				$("#node-input-listSpaces").val(listSpaces);
+				var option='';
+				
+				// change Test here!
+				if (listSpaces=="No space found") {
+					option='<option value="">No space found</option>';
+					$('#node-input-spaceId').empty().append(option);
+				} else { 
+				try {
+					var objListSpaces = JSON.parse(listSpaces);
+					for(var i = 0; i < objListSpaces.length; i++) {
+					    var space = objListSpaces[i];
+				    	if (space.id == nodeConfig.spaceId) {
+				    	option += '<option value="'+ space.id + '" selected>' + space.title + '</option>';
+				    	} else {
+						option += '<option value="'+ space.id + '">' + space.title + '</option>';				    	
+				    	}
+				    	console.log(nodeConfig.spaceId);
+				    	console.log(space.id);
+				    	console.log(space.title);
+					}
+				$('#node-input-spaceId').empty().append(option);
+				}
+				catch (err) {
+					console.error("Unable to parse ListSpace : "+listSpaces);
+					console.error(err);
+					option='<option value="">No space found</option>';
+					$('#node-input-spaceId').empty().append(option);
+				}
+
+			}
+    	}
+    }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="wwsIn">
+        <div class="form-row">
+            <p style="margin-top: 10px;">
+            <b>1.</b> 
+            <span>Register/Update this app at </span>
+            <a href="https://workspace.ibm.com/developer/apps" target="_blank" style="text-decoration:underline;">IBM Watson Workspace</a>
+            <span>using the following webhook callback URL :</span>
+            <div><code id="callback"></code></div>
+            </p>
+        </div>
+        <div class="form-row">
+            <p style="margin-top: 10px;"><b>2.</b> <span>Copy the app credentials here</span>:</p>
+        </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-wwsApplications"><i class="icon-tag"></i> WWS App</label>
+        <input type="text" id="node-input-wwsApplications" placeholder="Waston Work App">
+    </div>
+     <div class="form-row">
+        <label for="node-input-callbackUrl"><i class="icon-tag"></i> Callback URL</label>
+        <input type="text" id="node-input-callbackUrl" placeholder="Callback URL">
+    </div>   
+     <div class="form-row">
+        <label for="node-input-callbackPort"><i class="icon-tag"></i> Callback Port</label>
+        <input type="text" id="node-input-callbackPort" placeholder="Callback Port" value="goo>
+    </div>   
+	<div class="form-row" id="node-requireHttps">
+        <label>&nbsp;</label>
+        <input type="checkbox" id="node-input-requireHttps" style="display: inline-block; width: auto; vertical-align: top;" >
+        <label for="node-input-requireHttps" style="width: 70%;"> Require HTTPS</label>
+    </div>
+    <div class="form-row">
+        <label for="node-input-whId"><i class="icon-tag"></i> Webhook ID</label>
+        <input type="text" id="node-input-whId" placeholder="Webhook ID">
+    </div>
+    <div class="form-row">
+        <label for="node-input-whSecret"><i class="icon-tag"></i> Webhook secret</label>
+        <input type="text" id="node-input-whSecret" placeholder="Webhook Secret">
+    </div>
+
+	<div class="form-row" style="display:none !important">
+        <label for="node-input-update"><i class="fa fa-list"></i> Timestamp</label>
+        <input type="text" id="node-input-update" placeholder="">
+    </div>
+
+</script>
+
+<script type="text/x-red" data-help-name="wwsIn">
+    <p>A node to receive a message from IBM Watson Workspace using IBM Watson Work Services</p>
+</script>

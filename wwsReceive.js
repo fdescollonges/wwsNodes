@@ -10,8 +10,12 @@ const http = require('http');
 const https = require('https');
 const express = require('express');
 const bparser = require('body-parser');
+const bodyParser = bparser;
 const crypto = require('crypto');
 const cfenv = require("cfenv");
+const cookieParser = require("cookie-parser");
+var jsonParser = bodyParser.json();
+const urlencParser = bodyParser.urlencoded({extended:true});
 var appEnv = cfenv.getAppEnv();
 
 
@@ -32,12 +36,56 @@ module.exports = function(RED) {
 		console.log("config.whSecret:"+node.whSecret);
 		console.log("process.env.VCAP_APP_PORT : "+process.env.VCAP_APP_PORT);
 
-		node.app = express();
+		node.app = RED.httpNode;
 		node.app.use(rawBody);
 		node.app.enable('trust proxy');
+        var httpMiddleware = function(req,res,next) { next(); };
+        var metricsHandler = function(req,res,next) { next(); };
+        this.errorHandler = function(err,req,res,next) {
+            node.warn(err);
+            res.sendStatus(500);
+        };
+        var corsHandler = function(req,res,next) { next(); };
+        
+        function rawBodyParser(req, res, next) {
+            if (req.skipRawBodyParser) { next(); } // don't parse this if told to skip
+            if (req._body) { return next(); }
+            req.body = "";
+            req._body = true;
 
-		// GET Method for testing purpose
-		node.app.get(node.callbackUrl, function handleGet(req, res){
+            var isText = true;
+            var checkUTF = false;
+
+            if (req.headers['content-type']) {
+                var parsedType = typer.parse(req.headers['content-type']);
+                if (parsedType.type === "text") {
+                    isText = true;
+                } else if (parsedType.subtype === "xml" || parsedType.suffix === "xml") {
+                    isText = true;
+                } else if (parsedType.type !== "application") {
+                    isText = false;
+                } else if (parsedType.subtype !== "octet-stream") {
+                    checkUTF = true;
+                } else {
+                    // applicatino/octet-stream
+                    isText = false;
+                }
+            }
+
+            getBody(req, {
+                length: req.headers['content-length'],
+                encoding: isText ? "utf8" : null
+            }, function (err, buf) {
+                if (err) { return next(err); }
+                if (!isText && checkUTF && isUtf8(buf)) {
+                    buf = buf.toString();
+                }
+                req.body = buf;
+                next();
+            });
+        }
+        
+        function handleGet(req, res){
 		    console.log('GET /');
 		    //var html = '<html><body><form method="post" action="https://vfea.i234.me:8443/wws/wh/callback">Name: <input type="text" name="name" /><input type="submit" value="Submit" /></form></body>';
 		    //var html = fs.readFileSync('index.html');
@@ -49,10 +97,9 @@ module.exports = function(RED) {
 		    }
 		    res.writeHead(200, {'Content-Type': 'text/html'});
 		    res.end(html);
-		});
-
-		// POST Method to handle authorization and callback from Watson Work Services
-		node.app.post(node.callbackUrl, function handlePost(req, res){
+		};
+		
+		function handlePost(req, res){
 			console.log("In Callback");
 			console.log("Req.header:"+req.headers);
 			console.log("Req.rawBody:"+req.rawBody);
@@ -82,8 +129,14 @@ module.exports = function(RED) {
 			// passing the message to next Node
 			var msg = { payload:body };
 			node.send(msg);  
-		});
+		};
+		// GET Method for testing purpose
+		node.app.get(node.callbackUrl, cookieParser(), httpMiddleware, corsHandler, metricsHandler, handleGet, this.errorHandler);
+
+		// POST Method to handle authorization and callback from Watson Work Services
+		node.app.post(node.callbackUrl, cookieParser(), httpMiddleware, corsHandler, metricsHandler, jsonParser, urlencParser, rawBodyParser, handlePost, this.errorHandler);
 		
+		/*
 		startServer(node, function (err, server){
 			if (err) {
 				console.log("Unable to start the server on : "+node.urlCallback);
@@ -92,29 +145,52 @@ module.exports = function(RED) {
 				node.server = server;
 			}
 		});
-		  
-	    this.on("close",function() {
+		
+        this.on("close",function() {
+            var node = this;
+	    	console.log("On Close : Stopping the server");
+            RED.httpNode._router.stack.forEach(function(route,i,routes) {
+            	console.log(JSON.stringify(route));
+                if (route.route && route.route.path === node.callbackUrl) {
+                	
+                    routes.splice(i,1);
+                }
+            });
+        });
+        */
+        
+	    this.on("close",function(done) {
 	    	console.log("On Close : Stopping the server");
 	        var node = this;
 	        console.log("RequireHttps:"+node.requireHttps);
 	        var routes = node.app._router.stack;
 	        routes.forEach(removeMiddlewares);
 	        function removeMiddlewares(route, i, routes) {
+            	//console.log(JSON.stringify(route));
+            	console.log(JSON.stringify(route.route));
+            	console.log(route.handle.name);
 	            switch (route.handle.name) {
-	                case 'handlePost':
+	                case 'handlePost': {
+	                	console.log("remove handlePost");
+	                    routes.splice(i, 1); 
+	                }
+	                case 'handleGet': {
+	                	console.log("remove handleGet");
 	                    routes.splice(i, 1);
-	                case 'handleGet':
-	                    routes.splice(i, 1);
+	                }
 	            }
 	            if (route.route)
 	                route.route.stack.forEach(removeMiddlewares);
 	        }
+/*
 	    	if (node.requireHttps) {
 	    		node.server.close();
 	    	} else {
 	    		node.server.close();
 	    	}
+*/
 	     });
+	     
 	}
 	
 	RED.nodes.registerType("wwsReceive", wwsReceive);
@@ -131,7 +207,7 @@ module.exports = function(RED) {
 				const certificate = fs.readFileSync('node_modules/node-red-contrib-wwsNodes/ssl/cert.pem', 'utf8');
 				const credentials = {key: privateKey, cert: certificate, rejectUnauthorized: false };
 				node.httpsServer = https.createServer(credentials, node.app);
-		    	server = node.httpsServer.listen(node.callbackPort, appEnv.bind, function(){
+		    	server = node.httpsServer.listen(/*node.callbackPort, appEnv.bind, */function(){
 		    	    console.log("server starting locally on " + appEnv.url +" : "+ appEnv.bind);	
 					callback(null, server);
 
