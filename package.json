@@ -13,7 +13,8 @@
     	"body-parser":"*",
     	"crypto":"*", 
     	"cfenv":"*",
-    	"cookie-parser":"*"
+    	"cookie-parser":"*", 
+    	"raw-body":"*"
     },
     "keywords": [ "wws", "node-red" ],
       "author": "Franck Descollonges <franck_descollonges@fr.ibm.com>",
