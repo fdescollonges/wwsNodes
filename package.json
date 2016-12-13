@@ -30,10 +30,8 @@
     "node-red"     : {
         "nodes": {
             "wwsSend":"wwsSend.js",
-            "wwsReceive":"wwsReceive.js",
             "wwsApplications": "wwsApplications.js", 
-            "wwsIn": "wwsIn.js",
-            "wwsTestNode":"wwsTestNode.js"
+            "wwsIn": "wwsIn.js"
         }
     }
 }

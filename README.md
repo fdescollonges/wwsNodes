@@ -12,7 +12,7 @@ This configuration node can be reused across multiple WWS nodes
 Send a message to one or all spaces
 Choose to send the incoming payload in all spaces or choose one space in the list
 
-#### wwsReceive
+#### wwsIn
 Receive a message from Watson Work Services
 Manage the Webhook subscription and the messages reception
  
