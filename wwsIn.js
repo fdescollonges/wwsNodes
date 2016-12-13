@@ -220,7 +220,7 @@ module.exports = function(RED) {
         if (RED.settings.httpNodeRoot !== false) {
 
             if (!n.callbackUrl) {
-                this.warn(RED._("httpin.errors.missing-path"));
+                this.warn(RED._("wwwIn.errors.missing-path"));
                 return;
             }
             this.url = n.callbackUrl;
@@ -257,6 +257,7 @@ module.exports = function(RED) {
                 if (req.method=="POST") {
         		    console.log('POST /');
         			console.log("In Callback");
+        			if (!req.rawBody) { req.rawBody = req.body; }
         			console.log("Req.header:"+req.headers);
         			console.log("Req.rawBody:"+req.rawBody);
         			console.log("whSecret:"+node.whSecret);
@@ -315,8 +316,8 @@ module.exports = function(RED) {
             //RED.httpNode.all(this.url,cookieParser(),httpMiddleware,corsHandler,metricsHandler,this.callback,this.errorHandler);
             //RED.httpNode.all(this.url,cookieParser(),httpMiddleware,corsHandler,metricsHandler,jsonParser,urlencParser,rawBody,this.callback,this.errorHandler);
             
-            RED.httpNode.use(rawBody);
-    		RED.httpNode.all(this.url, this.callback,this.errorHandler);
+            //RED.httpNode.use(rawBody);
+    		RED.httpNode.all(this.url, rawBodyParser, this.callback, this.errorHandler);
 
             this.on("close",function() {
                 var node = this;
