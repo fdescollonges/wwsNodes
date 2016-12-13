@@ -63,7 +63,6 @@ module.exports = function(RED) {
             req.body = buf;
             next();
         });
-        next();
     }
 
     var corsSetup = false;
