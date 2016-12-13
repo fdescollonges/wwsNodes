@@ -225,7 +225,7 @@ module.exports = function(RED) {
             }
             this.url = n.callbackUrl;
             this.whSecret = n.whSecret;
-            this.appId = n.appId;
+            this.appId = n.wwsApplications.appId;
             //this.method = n.method;
             //this.swaggerDoc = n.swaggerDoc;
 
