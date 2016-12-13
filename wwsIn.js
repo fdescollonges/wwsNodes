@@ -126,9 +126,11 @@ module.exports = function(RED) {
                 this.warn(RED._("wwwIn.errors.missing-path"));
                 return;
             }
+            
+    		this.wwsApplications = RED.nodes.getNode(n.wwsApplications);
             this.url = n.callbackUrl;
             this.whSecret = n.whSecret;
-            this.appId = n.wwsApplications.appId;
+            this.appId = this.wwsApplications.appId;
             
             //this.method = n.method;
             //this.swaggerDoc = n.swaggerDoc;
