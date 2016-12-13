@@ -9,7 +9,7 @@
             listSpaces: {value:""}
         },
         label: function() {
-            return this.appName+":{"+this.appId+'}';
+            return (this.appName || this.appId) ;
         },
         oneditsave: function() {
         	function getToken(appId, appSecret, cb) {

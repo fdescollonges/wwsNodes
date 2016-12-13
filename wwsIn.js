@@ -107,7 +107,7 @@ module.exports = function(RED) {
 	}
 	
 	function rawBody(req, res, next) {
-		console.log("rawBody");
+		//console.log("rawBody");
 	    var buffers = [];
 	    req.on("data", function(chunk) {
 	        buffers.push(chunk);
@@ -136,7 +136,7 @@ module.exports = function(RED) {
             //this.swaggerDoc = n.swaggerDoc;
 
             var node = this;
-            console.log("node.appId : "+node.appId);
+            //console.log("node.appId : "+node.appId);
             
             this.errorHandler = function(err,req,res,next) {
                 node.warn(err);
@@ -162,13 +162,13 @@ module.exports = function(RED) {
                     //node.send({_msgid:msgid,req:req,res:createResponseWrapper(node,res),payload:req.query});
                 };
                 if (req.method=="POST") {
-        		    console.log('POST /');
-        			console.log("In Callback");
+        		    //console.log('POST /');
+        			//console.log("In Callback");
         			if (!req.rawBody) { req.rawBody = req.body; }
-        			console.log("Req.header:"+req.headers);
-        			console.log("Req.rawBody:"+req.rawBody);
-        			console.log("whSecret:"+node.whSecret);
-        			console.log("req.get('X-OUTBOUND-TOKEN'):"+req.get('X-OUTBOUND-TOKEN'));
+        			//console.log("Req.header:"+req.headers);
+        			//console.log("Req.rawBody:"+req.rawBody);
+        			//console.log("whSecret:"+node.whSecret);
+        			//console.log("req.get('X-OUTBOUND-TOKEN'):"+req.get('X-OUTBOUND-TOKEN'));
         			
         			if (!verifySender(req.headers, req.rawBody, node.whSecret, req.get('X-OUTBOUND-TOKEN'))) {
         				console.log("ERROR: Cannot verify caller! -------------");
@@ -186,9 +186,9 @@ module.exports = function(RED) {
                     
         			// Acknowledge we received and processed notification to avoid getting sent the same event again
         			res.status(200).end();
-        			console.log("body : " + body);
-        			console.log("body.userId" + body.userId);
-        			console.log("node.appId : " + node.appId);
+        			//console.log("body : " + body);
+        			//console.log("body.userId" + body.userId);
+        			//console.log("node.appId : " + node.appId);
         			
         			if (body.userId === node.appId) {
         				console.log("INFO: Skipping our own message Body: " + JSON.stringify(body));
