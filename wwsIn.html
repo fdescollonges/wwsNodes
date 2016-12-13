@@ -53,7 +53,7 @@
         	var callback = location.protocol + "//" +
                            location.hostname + 
                            (location.port? ":"+location.port:"")+
-                           pathname + "wws/webhook/callback";
+                           pathname + "<<Callback URL>>";
             $("#callback").text(callback);
         	oldValue = '';
         	nodeConfig = this;
@@ -100,7 +100,21 @@
        		$("#node-input-requireHttps").on("click", function () {
         		$("#node-input-update").val(Date.now);
        		});
-
+			
+        	
+			$("#node-input-callbackUrl").change(function () {
+				var pathname = document.location.pathname;
+	            if (pathname.slice(-1) != "/") {
+	                pathname += "/";
+	            }
+	            
+	        	var callback = location.protocol + "//" +
+	                           location.hostname + 
+	                           (location.port? ":"+location.port:"")+
+	                           pathname + $("#node-input-callbackUrl").val();
+				$("#callback").text(callback);	
+			});
+			
 			// Refresh on configuration changes
 			$("#node-input-wwsApplications").change(function () {
 	        		console.log("Config changed");
@@ -185,7 +199,8 @@
      <div class="form-row">
         <label for="node-input-callbackUrl"><i class="icon-tag"></i> Callback URL</label>
         <input type="text" id="node-input-callbackUrl" placeholder="Callback URL">
-    </div>   
+    </div> 
+<!--  
      <div class="form-row">
         <label for="node-input-callbackPort"><i class="icon-tag"></i> Callback Port</label>
         <input type="text" id="node-input-callbackPort" placeholder="Callback Port" value="goo>
@@ -195,6 +210,8 @@
         <input type="checkbox" id="node-input-requireHttps" style="display: inline-block; width: auto; vertical-align: top;" >
         <label for="node-input-requireHttps" style="width: 70%;"> Require HTTPS</label>
     </div>
+-->
+
     <div class="form-row">
         <label for="node-input-whId"><i class="icon-tag"></i> Webhook ID</label>
         <input type="text" id="node-input-whId" placeholder="Webhook ID">

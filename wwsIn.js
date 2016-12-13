@@ -66,104 +66,7 @@ module.exports = function(RED) {
     }
 
     var corsSetup = false;
-
-    function createRequestWrapper(node,req) {
-        // This misses a bunch of properties (eg headers). Before we use this function
-        // need to ensure it captures everything documented by Express and HTTP modules.
-        var wrapper = {
-            _req: req
-        };
-        var toWrap = [
-            "param",
-            "get",
-            "is",
-            "acceptsCharset",
-            "acceptsLanguage",
-            "app",
-            "baseUrl",
-            "body",
-            "cookies",
-            "fresh",
-            "host" +
-            "",
-            "ip",
-            "ips",
-            "originalUrl",
-            "params",
-            "path",
-            "protocol",
-            "query",
-            "route",
-            "secure",
-            "signedCookies",
-            "stale",
-            "subdomains",
-            "xhr",
-            "socket" // TODO: tidy this up
-        ];
-        toWrap.forEach(function(f) {
-            if (typeof req[f] === "function") {
-                wrapper[f] = function() {
-                    node.warn(RED._("httpin.errors.deprecated-call",{method:"msg.req."+f}));
-                    var result = req[f].apply(req,arguments);
-                    if (result === req) {
-                        return wrapper;
-                    } else {
-                        return result;
-                    }
-                }
-            } else {
-                wrapper[f] = req[f];
-            }
-        });
-
-
-        return wrapper;
-    }
-    function createResponseWrapper(node,res) {
-        var wrapper = {
-            _res: res
-        };
-        var toWrap = [
-            "append",
-            "attachment",
-            "cookie",
-            "clearCookie",
-            "download",
-            "end",
-            "format",
-            "get",
-            "json",
-            "jsonp",
-            "links",
-            "location",
-            "redirect",
-            "render",
-            "send",
-            "sendfile",
-            "sendFile",
-            "sendStatus",
-            "set",
-            "status",
-            "type",
-            "vary"
-        ];
-        toWrap.forEach(function(f) {
-            wrapper[f] = function() {
-                node.warn(RED._("httpin.errors.deprecated-call",{method:"msg.res."+f}));
-                var result = res[f].apply(res,arguments);
-                if (result === res) {
-                    return wrapper;
-                } else {
-                    return result;
-                }
-            }
-        });
-        return wrapper;
-    }
-
     var corsHandler = function(req,res,next) { next(); }
-
     /*
  	if (RED.settings.httpNodeCors) {
         corsHandler = cors(RED.settings.httpNodeCors);
@@ -226,11 +129,13 @@ module.exports = function(RED) {
             this.url = n.callbackUrl;
             this.whSecret = n.whSecret;
             this.appId = n.wwsApplications.appId;
+            
             //this.method = n.method;
             //this.swaggerDoc = n.swaggerDoc;
 
             var node = this;
-
+            console.log("node.appId : "+node.appId);
+            
             this.errorHandler = function(err,req,res,next) {
                 node.warn(err);
                 res.sendStatus(500);
@@ -279,6 +184,10 @@ module.exports = function(RED) {
                     
         			// Acknowledge we received and processed notification to avoid getting sent the same event again
         			res.status(200).end();
+        			console.log("body : " + body);
+        			console.log("body.userId" + body.userId);
+        			console.log("node.appId : " + node.appId);
+        			
         			if (body.userId === node.appId) {
         				console.log("INFO: Skipping our own message Body: " + JSON.stringify(body));
         			    return;
