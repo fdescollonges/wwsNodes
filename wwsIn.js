@@ -84,7 +84,8 @@ module.exports = function(RED) {
             "body",
             "cookies",
             "fresh",
-            "hostname",
+            "host" +
+            "",
             "ip",
             "ips",
             "originalUrl",
@@ -163,10 +164,12 @@ module.exports = function(RED) {
 
     var corsHandler = function(req,res,next) { next(); }
 
-    if (RED.settings.httpNodeCors) {
+    /*
+ 	if (RED.settings.httpNodeCors) {
         corsHandler = cors(RED.settings.httpNodeCors);
         RED.httpNode.options("*",corsHandler);
     }
+    */
     
 	function verifySender(headers, rawbody, whSecret, headerToken) {
 	    var expectedToken = crypto
@@ -201,6 +204,7 @@ module.exports = function(RED) {
 	}
 	
 	function rawBody(req, res, next) {
+		console.log("rawBody");
 	    var buffers = [];
 	    req.on("data", function(chunk) {
 	        buffers.push(chunk);
@@ -285,15 +289,11 @@ module.exports = function(RED) {
                 }
             };
 
-            var httpMiddleware = function(req,res,next) { next(); }
+            var httpMiddleware = function(req,res,next) { console.log("middleware"); next(); }
 
-            if (RED.settings.httpNodeMiddleware) {
-                if (typeof RED.settings.httpNodeMiddleware === "function") {
-                    httpMiddleware = RED.settings.httpNodeMiddleware;
-                }
-            }
 
-            var metricsHandler = function(req,res,next) { next(); }
+            var metricsHandler = function(req,res,next) { console.log("metrics");next(); }
+            
             if (this.metric()) {
                 metricsHandler = function(req, res, next) {
                     var startAt = process.hrtime();
@@ -313,7 +313,10 @@ module.exports = function(RED) {
             }
 
             //RED.httpNode.all(this.url,cookieParser(),httpMiddleware,corsHandler,metricsHandler,this.callback,this.errorHandler);
-            RED.httpNode.all(this.url,cookieParser(),httpMiddleware,corsHandler,metricsHandler,jsonParser,urlencParser,rawBody,this.callback,this.errorHandler);
+            //RED.httpNode.all(this.url,cookieParser(),httpMiddleware,corsHandler,metricsHandler,jsonParser,urlencParser,rawBody,this.callback,this.errorHandler);
+            
+            RED.httpNode.use(rawBody);
+    		RED.httpNode.all(this.url, this.callback,this.errorHandler);
 
             this.on("close",function() {
                 var node = this;
