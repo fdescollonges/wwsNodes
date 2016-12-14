@@ -37,11 +37,11 @@
         	// Init all variables
         	console.log("Oneditprepare");
 
-        	var callback = location.protocol + "//" +
-                           location.hostname + 
-                           (location.port? ":"+location.port:"")+
-                            "<<Callback URL>>";
-            $("#callback").text(callback);
+        	//var callback = location.protocol + "//" +
+            //               location.hostname + 
+            //               (location.port? ":"+location.port:"")+
+            //                "<<Callback URL>>";
+            //$("#callback").text(callback);
 
             nodeConfig = this;        	
         	// Store configuration informations
@@ -51,8 +51,7 @@
          
 	        	var callback = location.protocol + "//" +
 	                           location.hostname + 
-	                           (location.port? ":"+location.port:"")+
-	                           pathname + $("#node-input-callbackUrl").val();
+	                           (location.port? ":"+location.port:"")+ $("#node-input-callbackUrl").val();
 				$("#callback").text(callback);	
 			});
     	}
