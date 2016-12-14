@@ -27,7 +27,7 @@ module.exports = function(RED) {
     var isUtf8 = require('is-utf8');
     var crypto = require('crypto');
 
-    function rawBodyParser(req, res, next) {
+    var rawBodyParser = function(req, res, next) {
         		console.log("[wwsNodes] In rawBodyParser - Content-type : "+req.headers['content-type']);
         if (req.skipRawBodyParser) { next(); } // don't parse this if told to skip
         if (req._body) { return next(); }
@@ -76,8 +76,8 @@ module.exports = function(RED) {
     }
     */
     
-	function verifySender(headers, rawbody, whSecret, headerToken) {
-				console.log("[wwsNodes] Verify Sender")
+    var verifySender = function (headers, rawbody, whSecret, headerToken) {
+		console.log("[wwsNodes] Verify Sender")
 	    var expectedToken = crypto
 	        .createHmac("sha256", whSecret)
 	        .update(rawbody)
@@ -90,7 +90,7 @@ module.exports = function(RED) {
 	    }
 	}
 
-	function handleVerificationRequest(response, challenge, whSecret) {
+	var handleVerificationRequest = function(response, challenge, whSecret) {
 	    var responseBodyObject = {
 	        "response": challenge
 	    };
@@ -109,7 +109,7 @@ module.exports = function(RED) {
 	    response.end(responseBodyString);
 	}
 	
-	function rawBody(req, res, next) {
+	var rawBody = function(req, res, next) {
 		//		console.log("[wwsNodes] rawBody");
 	    var buffers = [];
 	    req.on("data", function(chunk) {
@@ -242,7 +242,7 @@ module.exports = function(RED) {
             //RED.httpNode.all(this.url,cookieParser(),httpMiddleware,corsHandler,metricsHandler,jsonParser,urlencParser,rawBody,this.callback,this.errorHandler);
             
             //RED.httpNode.use(rawBody);
-    		RED.httpNode.all(this.url, this.callback, this.errorHandler);
+    		RED.httpNode.all(this.url, rawBodyParser, this.callback, this.errorHandler);
 
             this.on("close",function() {
                 var node = this;
