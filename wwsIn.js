@@ -180,7 +180,7 @@ module.exports = function(RED) {
         			
         			if (!verifySender(req.headers, req.rawBody, node.whSecret, req.get('X-OUTBOUND-TOKEN'))) {
         						console.log("[wwsNodes] ERROR: Cannot verify caller! -------------");
-        			    console.log(req.body.toString());
+        			    console.log("[wwsNodes] "+req.body.toString());
         			    res.status(200).end();
         			    return;
         			} else {
@@ -242,7 +242,7 @@ module.exports = function(RED) {
             //RED.httpNode.all(this.url,cookieParser(),httpMiddleware,corsHandler,metricsHandler,jsonParser,urlencParser,rawBody,this.callback,this.errorHandler);
             
             //RED.httpNode.use(rawBody);
-    		RED.httpNode.all(this.url, rawBodyParser, this.callback, this.errorHandler);
+    		RED.httpNode.all(this.url, this.callback, this.errorHandler);
 
             this.on("close",function() {
                 var node = this;
