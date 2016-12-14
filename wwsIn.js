@@ -28,7 +28,7 @@ module.exports = function(RED) {
     var crypto = require('crypto');
 
     function rawBodyParser(req, res, next) {
-        console.log("In rawBodyParser - Content-type : "+req.headers['content-type']);
+        		console.log("[wwsNodes] In rawBodyParser - Content-type : "+req.headers['content-type']);
         if (req.skipRawBodyParser) { next(); } // don't parse this if told to skip
         if (req._body) { return next(); }
         req.body = "";
@@ -61,7 +61,8 @@ module.exports = function(RED) {
                 buf = buf.toString()
             }
             req.body = buf;
-            console.log("In RawBodyParser - req.body :"+req.body);
+            req.rawBody = buf;
+            		console.log("[wwsNodes] In RawBodyParser - req.body :"+req.body);
             next();
         });
     }
@@ -76,6 +77,7 @@ module.exports = function(RED) {
     */
     
 	function verifySender(headers, rawbody, whSecret, headerToken) {
+				console.log("[wwsNodes] Verify Sender")
 	    var expectedToken = crypto
 	        .createHmac("sha256", whSecret)
 	        .update(rawbody)
@@ -108,7 +110,7 @@ module.exports = function(RED) {
 	}
 	
 	function rawBody(req, res, next) {
-		//console.log("rawBody");
+		//		console.log("[wwsNodes] rawBody");
 	    var buffers = [];
 	    req.on("data", function(chunk) {
 	        buffers.push(chunk);
@@ -137,7 +139,7 @@ module.exports = function(RED) {
             //this.swaggerDoc = n.swaggerDoc;
 
             var node = this;
-            //console.log("node.appId : "+node.appId);
+            //		console.log("[wwsNodes] node.appId : "+node.appId);
             
             this.errorHandler = function(err,req,res,next) {
                 node.warn(err);
@@ -147,9 +149,9 @@ module.exports = function(RED) {
             this.callback = function(req,res) {
                 var msgid = RED.util.generateId();
                 res._msgid = msgid;
-    		    console.log('Message received : '+JSON.stringify(req.body));
+    		    console.log('[wwsNodes] Message received : '+JSON.stringify(req.body));
                 if (req.method=="GET") {
-        		    console.log('GET /');
+        		    console.log('[wwsNodes] GET /');
         		    //var html = '<html><body><form method="post" action="https://vfea.i234.me:8443/wws/wh/callback">Name: <input type="text" name="name" /><input type="submit" value="Submit" /></form></body>';
         		    //var html = fs.readFileSync('index.html');
         		    var html;
@@ -163,26 +165,26 @@ module.exports = function(RED) {
                     //node.send({_msgid:msgid,req:req,res:createResponseWrapper(node,res),payload:req.query});
                 };
                 if (req.method=="POST") {
-        		    //console.log('POST /');
-        			//console.log("In Callback");
+        		    //console.log('[wwsNodes] POST /');
+        			//		console.log("[wwsNodes] In Callback");
         			if (!req.rawBody) { 
-        				console.log("req.rawBody is null - setting it to JSON.stringify(req.body)");
+        						console.log("[wwsNodes] req.rawBody is null - setting it to JSON.stringify(req.body)");
         				req.rawBody = JSON.stringify(req.body); 
         			}
-        			console.log("req.body : "+ req.body);
-        			console.log("req.rawBody : " + req.rawBody);
-        			//console.log("Req.header:"+JSON.stringify(req.headers));
-        			//console.log("Req.rawBody:"+req.rawBody);
-        			//console.log("whSecret:"+node.whSecret);
-        			console.log("req.get('X-OUTBOUND-TOKEN'):"+req.get('X-OUTBOUND-TOKEN'));
+        					console.log("[wwsNodes] req.body : "+ req.body);
+        					console.log("[wwsNodes] req.rawBody : " + req.rawBody);
+        			//		console.log("[wwsNodes] Req.header:"+JSON.stringify(req.headers));
+        			//		console.log("[wwsNodes] Req.rawBody:"+req.rawBody);
+        			//		console.log("[wwsNodes] whSecret:"+node.whSecret);
+        					console.log("[wwsNodes] req.get('X-OUTBOUND-TOKEN'):"+req.get('X-OUTBOUND-TOKEN'));
         			
         			if (!verifySender(req.headers, req.rawBody, node.whSecret, req.get('X-OUTBOUND-TOKEN'))) {
-        				console.log("ERROR: Cannot verify caller! -------------");
-        			    console.log(req.rawBody.toString());
+        						console.log("[wwsNodes] ERROR: Cannot verify caller! -------------");
+        			    console.log(req.body.toString());
         			    res.status(200).end();
         			    return;
         			} else {
-        			    console.log("INFO: verifySender processed");
+        			    		console.log("[wwsNodes] INFO: verifySender processed");
         			}
         			
         			
@@ -191,19 +193,19 @@ module.exports = function(RED) {
         			var eventType = body.type;
         			if (eventType === "verification") {
         			    handleVerificationRequest(res, body.challenge, node.whSecret);
-        			    console.log("INFO: Verification request processed");
+        			    		console.log("[wwsNodes] INFO: Verification request processed");
         			    return;
         			}
                     
         			// Acknowledge we received and processed notification to avoid getting sent the same event again
         			res.status(200).end();
-        			//console.log("body : " + body);
-        			console.log("body.userId : " + body.userId);
-        			console.log("node.appId : " + node.appId);
-        			//console.log("this.appId : "+ this.appId);
+        			//		console.log("[wwsNodes] body : " + body);
+        					console.log("[wwsNodes] body.userId : " + body.userId);
+        					console.log("[wwsNodes] node.appId : " + node.appId);
+        			//		console.log("[wwsNodes] this.appId : "+ this.appId);
         			
         			if (body.userId === node.appId) {
-        				console.log("INFO: Skipping our own message Body: " + JSON.stringify(body));
+        						console.log("[wwsNodes] INFO: Skipping our own message Body: " + JSON.stringify(body));
         			    return;
         			}
         			// passing the message to next Node
@@ -213,10 +215,10 @@ module.exports = function(RED) {
                 }
             };
 
-            var httpMiddleware = function(req,res,next) { console.log("middleware"); next(); }
+            var httpMiddleware = function(req,res,next) { 		console.log("[wwsNodes] middleware"); next(); }
 
 
-            var metricsHandler = function(req,res,next) { console.log("metrics");next(); }
+            var metricsHandler = function(req,res,next) { 		console.log("[wwsNodes] metrics");next(); }
             
             if (this.metric()) {
                 metricsHandler = function(req, res, next) {
