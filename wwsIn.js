@@ -28,6 +28,7 @@ module.exports = function(RED) {
     var crypto = require('crypto');
 
     function rawBodyParser(req, res, next) {
+        console.log("In rawBodyParser - Content-type : "+req.headers['content-type']);
         if (req.skipRawBodyParser) { next(); } // don't parse this if told to skip
         if (req._body) { return next(); }
         req.body = "";
@@ -35,7 +36,6 @@ module.exports = function(RED) {
 
         var isText = true;
         var checkUTF = false;
-
         if (req.headers['content-type']) {
             var parsedType = typer.parse(req.headers['content-type'])
             if (parsedType.type === "text") {
@@ -61,6 +61,7 @@ module.exports = function(RED) {
                 buf = buf.toString()
             }
             req.body = buf;
+            console.log("In RawBodyParser - req.body :"+req.body);
             next();
         });
     }
@@ -164,18 +165,28 @@ module.exports = function(RED) {
                 if (req.method=="POST") {
         		    //console.log('POST /');
         			//console.log("In Callback");
-        			if (!req.rawBody) { req.rawBody = req.body; }
-        			//console.log("Req.header:"+req.headers);
+        			if (!req.rawBody) { 
+        				console.log("req.rawBody is null - setting it to JSON.stringify(req.body)");
+        				req.rawBody = JSON.stringify(req.body); 
+        			}
+        			console.log("req.body : "+ req.body);
+        			console.log("req.rawBody : " + req.rawBody);
+        			//console.log("Req.header:"+JSON.stringify(req.headers));
         			//console.log("Req.rawBody:"+req.rawBody);
         			//console.log("whSecret:"+node.whSecret);
-        			//console.log("req.get('X-OUTBOUND-TOKEN'):"+req.get('X-OUTBOUND-TOKEN'));
+        			console.log("req.get('X-OUTBOUND-TOKEN'):"+req.get('X-OUTBOUND-TOKEN'));
         			
         			if (!verifySender(req.headers, req.rawBody, node.whSecret, req.get('X-OUTBOUND-TOKEN'))) {
         				console.log("ERROR: Cannot verify caller! -------------");
         			    console.log(req.rawBody.toString());
         			    res.status(200).end();
         			    return;
+        			} else {
+        			    console.log("INFO: verifySender processed");
         			}
+        			
+        			
+
         			var body = JSON.parse(req.rawBody.toString());
         			var eventType = body.type;
         			if (eventType === "verification") {
@@ -187,8 +198,9 @@ module.exports = function(RED) {
         			// Acknowledge we received and processed notification to avoid getting sent the same event again
         			res.status(200).end();
         			//console.log("body : " + body);
-        			//console.log("body.userId" + body.userId);
-        			//console.log("node.appId : " + node.appId);
+        			console.log("body.userId : " + body.userId);
+        			console.log("node.appId : " + node.appId);
+        			//console.log("this.appId : "+ this.appId);
         			
         			if (body.userId === node.appId) {
         				console.log("INFO: Skipping our own message Body: " + JSON.stringify(body));

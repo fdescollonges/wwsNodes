@@ -73,10 +73,10 @@ module.exports = function(RED) {
 	
 	function sendMessage(msg, spaceId, jwtToken, callback) {
 		var url = `https://api.watsonwork.ibm.com/v1/spaces/${spaceId}/messages`;
-		var title = msg.title || 'title';
+		var title = msg.title || '';
 		var color = msg.color || '#0000FF';
-		var text = String(msg.payload) || 'text';
-		var name = msg.name || 'name';
+		var text = String(msg.payload) || '';
+		var name = msg.name || '';
 		var avatar = msg.avatar || 'https://raw.githubusercontent.com/fdescollonges/wwsNodes/master/icons/node-red.png';
 		var body = {
 			headers: {
