@@ -17,7 +17,7 @@
     				var string = appId + ":" + appSecret;
     				var toBase64 = btoa(string);
     				var authorization = "Basic "+toBase64;
-    				console.log('Getting token : ' +authorization);
+    				console.log('[wwsNodes] Getting token : ' +authorization);
     				var _url = 'https://api.watsonwork.ibm.com/oauth/token';
 	   				$.ajax({
     					url: _url,
@@ -30,7 +30,7 @@
 	    				data: 'grant_type=client_credentials', 
 	    				json: true,
 	    				success: function(msg) {
-	    					console.log("success : "+msg.access_token);
+	    							console.log("[wwsNodes] success : "+msg.access_token);
 	    					cb(null, msg.access_token);
 	    				}	  
 	    			});   			
@@ -39,7 +39,7 @@
         	
         	function getSpaces(token, cb) {
 //        		setTimeout(function(){
-        		console.log('In get spaces');
+        		console.log('[wwsNodes] In get spaces');
         		var _url = 'https://workspace.ibm.com/graphql?query=query%20getSpaceId%7Bspaces(first%3A200)%7Bitems%7Bid%20title%7D%7D%7D%0A&operationName=getSpaceId';
 	   			$.ajax({
     				url: _url,
@@ -51,11 +51,11 @@
     		        async: false,
     				json: true,
     				success: function(msg) {
-    					console.log("Get Spaces success : "+JSON.stringify(msg.data.spaces.items));
+    							console.log("[wwsNodes] Get Spaces success : "+JSON.stringify(msg.data.spaces.items));
     					cb(null, JSON.stringify(msg.data.spaces.items));
     				}	,
     				error: function(msg) {
-    					console.log("Unable to get spaces : "+JSON.stringify(err,null, 2));
+    							console.log("[wwsNodes] Unable to get spaces : "+JSON.stringify(err,null, 2));
     					cb(err);
     				}
     			});   			
@@ -73,7 +73,7 @@
         		if (err) {
         			console.error('Unable to get Token : '+err);
         		}
-        		console.log("Token : "+token);
+        				console.log("[wwsNodes] Token : "+token);
                 $("#node-config-input-accessToken").val(token);
         		getSpaces(token, function(err, spaces) {
         			if(err){
@@ -83,7 +83,7 @@
                     $("#node-config-input-listSpaces").val(spaces);
                     $("#node-input-listSpaces").val(spaces);
                    	wwsApps[configId] = spaces;
-                	console.log("wwsApplications saved : " + JSON.stringify(wwsApps));
+                			console.log("[wwsNodes] wwsApplications saved : " + JSON.stringify(wwsApps));
         		});
         	});
         }

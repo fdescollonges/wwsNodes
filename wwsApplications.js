@@ -19,14 +19,14 @@ module.exports = function(RED) {
 					if (err) {
 						console.error('Initialize : Failed');
 					}			
-					//console.log('Got new token');
+					//console.log('[wwsNodes] Got new token');
 					this.accessToken=token;
 					node.getSpaces(token,
 							(err, spaces) => {
 								if (err) {
 									console.error('Unable to get spaces : ' + err);
 								}
-								console.log('Got all spaces :' + JSON.stringify(spaces));
+								console.log('[wwsNodes] Got all spaces :' + JSON.stringify(spaces));
 								node.listSpaces = JSON.stringify(spaces);
 							})
 				});
@@ -41,15 +41,15 @@ module.exports = function(RED) {
 						return;
 					}
 
-					console.log("Initialized JWT token");
+					console.log("[wwsNodes] Initialized JWT token");
 					this.accessToken = token();
 					cb(undefined, this.accessToken);
-					// console.log("AccessToken : "+this.accessToken);
+					// console.log("[wwsNodes] AccessToken : "+this.accessToken);
 				});
 	}
 
 	wwsApplications.prototype.getSpaces = function(token, cb) {
-		//console.log('In get spaces');
+		//console.log('[wwsNodes] In get spaces');
 		var _url = 'https://workspace.ibm.com/graphql?query=query%20getSpaceId%7Bspaces(first%3A200)%7Bitems%7Bid%20title%7D%7D%7D%0A&operationName=getSpaceId';
 		var _headers = {
 				//Authorization: `Bearer ${token}`,
@@ -91,8 +91,8 @@ module.exports = function(RED) {
 			var buffer = new Buffer(string);
 			var toBase64 = buffer.toString('base64');
 			var authorization = "Basic "+toBase64;
-//			console.log('Getting token : ' +authorization);
-			console.log('Getting token');			
+//			console.log('[wwsNodes] Getting token : ' +authorization);
+			console.log('[wwsNodes] Getting token');			
 			request.post('https://api.watsonwork.ibm.com/oauth/token', {
 				headers : {
 					"Content-Type": "application/x-www-form-urlencoded",
@@ -105,19 +105,19 @@ module.exports = function(RED) {
 				}
 			}, (err, res) => {
 				if(err || res.statusCode !== 200) {
-					console.log('Error getting token %o', err || res.statusCode);
+					console.log('[wwsNodes] Error getting token %o', err || res.statusCode);
 					cb(err || new Error(res.statusCode), current);
 					return;
 				}
 
 				// Save the fresh token
-				console.log('Got new token');
+				console.log('[wwsNodes] Got new token');
 				tok = res.body.access_token;
 				// this.accessToken = tok;
 
 				// Schedule next refresh a bit before the token expires
 				const t = ttl(tok);
-				console.log('Token ttl', t);
+				console.log('[wwsNodes] Token ttl', t);
 				setTimeout(refresh, Math.max(0, t - 60000)).unref();
 
 				// Return a function that'll return the current token

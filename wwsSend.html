@@ -20,7 +20,7 @@
         }, 
         oneditprepare: function() {
         	// Init all variables
-        	console.log("Oneditprepare");
+        	console.log("[wwsNodes] Oneditprepare");
         	oldValue = '';
         	nodeConfig = this;
         	listSpaces = nodeConfig.listSpaces;
@@ -70,7 +70,7 @@
 
 			// Refresh on configuration changes
 			$("#node-input-wwsApplications").change(function () {
-	        		console.log("Config changed");
+	        		console.log("[wwsNodes] Config changed");
 	        		if (nodeConfig !== this) {
 	        			let tmpListSpaces = 'No space found';
 	        			if ((this.value !== oldValue) && (!wwsApps[this.value])) {
@@ -89,7 +89,7 @@
 			
 			// Update Select list of choices
 			function show_spaces(){
-				console.log("ShowSpaces");
+				console.log("[wwsNodes] ShowSpaces");
 				var listSpaces = nodeConfig.listSpaces;
 				console.log(listSpaces);
 				$("#node-input-listSpaces").val(listSpaces);
