@@ -27,7 +27,27 @@ module.exports = function(RED) {
     var isUtf8 = require('is-utf8');
     var crypto = require('crypto');
 
-    var rawBodyParser = function(req, res, next) {
+
+    function wwsIn(n) {
+        RED.nodes.createNode(this,n);
+        if (RED.settings.httpNodeRoot !== false) {
+
+            if (!n.callbackUrl) {
+                this.warn(RED._("wwwIn.errors.missing-path"));
+                return;
+            }
+            
+    		this.wwsApplications = RED.nodes.getNode(n.wwsApplications);
+            this.url = n.callbackUrl;
+            this.whSecret = n.whSecret;
+            this.appId = this.wwsApplications.appId;
+            
+            //this.method = n.method;
+            //this.swaggerDoc = n.swaggerDoc;
+
+            var node = this;
+            //		console.log("[wwsNodes] node.appId : "+node.appId);
+            var rawBodyParser = function(req, res, next) {
         		console.log("[wwsNodes] In rawBodyParser - Content-type : "+req.headers['content-type']);
         if (req.skipRawBodyParser) { next(); } // don't parse this if told to skip
         if (req._body) { return next(); }
@@ -121,25 +141,6 @@ module.exports = function(RED) {
 	    });
 	}
 
-    function wwsIn(n) {
-        RED.nodes.createNode(this,n);
-        if (RED.settings.httpNodeRoot !== false) {
-
-            if (!n.callbackUrl) {
-                this.warn(RED._("wwwIn.errors.missing-path"));
-                return;
-            }
-            
-    		this.wwsApplications = RED.nodes.getNode(n.wwsApplications);
-            this.url = n.callbackUrl;
-            this.whSecret = n.whSecret;
-            this.appId = this.wwsApplications.appId;
-            
-            //this.method = n.method;
-            //this.swaggerDoc = n.swaggerDoc;
-
-            var node = this;
-            //		console.log("[wwsNodes] node.appId : "+node.appId);
             
             this.errorHandler = function(err,req,res,next) {
                 node.warn(err);
