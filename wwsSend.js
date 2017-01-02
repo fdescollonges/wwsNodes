@@ -21,6 +21,12 @@ module.exports = function(RED) {
 			var allSpaces = config.allSpaces;
 			var node = this;
 			
+			if (msg.spaceId) {
+				console.log("[wwsNodes] SpaceId dynamically specified");
+				allSpaces = false;
+				spaceId = msg.spaceId;
+			}
+			
 			// msg.payload = "jwt :" + appId + "/" + appSecret + " Bearer {"+
 			// jwtToken + "}";
 			if (allSpaces) {

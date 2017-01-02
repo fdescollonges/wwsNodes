@@ -11,6 +11,13 @@ This configuration node can be reused across multiple WWS nodes
 #### wwsSend
 Send a message to one or all spaces
 Choose to send the incoming payload in all spaces or choose one space in the list
+It uses : 
+- msg.payload : text message
+- msg.color : color of the border
+- msg.title : title of the message
+- msg.name : sender of the message
+- msg.avatar : url of the picture of the sender
+- msg.spaceId : Id of the space to send the message to (if set, it overides the UI choices)
 
 #### wwsIn
 Receive a message from Watson Work Services
