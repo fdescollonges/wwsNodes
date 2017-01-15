@@ -22,6 +22,13 @@ It uses :
 #### wwsIn
 Receive a message from Watson Work Services
 Manage the Webhook subscription and the messages reception
+
+#### wwsGraphQL
+A node to send a graphQL request to Watson Work Services<
+It uses : 
+    - msg.graphQLQuery : GraphQL Query (if set, it overides the UI query). Ex. : query getSpaceId{spaces(first:5){items{id title}}}
+    - msg.graphQLResult : Result of the GraphQL Query
+Other msg parts are left unchanged
  
 ### Usage
 To be used with Node-RED

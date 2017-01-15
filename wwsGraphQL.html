@@ -1,0 +1,45 @@
+<script type="text/javascript"> 
+    RED.nodes.registerType('wwsGraphQL',{ 
+        category: 'function',
+        color: '#a6bbcf',
+        defaults: {
+            name: {value:""},
+            wwsApplications: {value:"",type:"wwsApplications"},
+            graphQLQuery: {value:""}
+        },
+        inputs:1,
+        outputs:1,
+        icon: "wws.png",
+        align: 'left',
+        label: function() {
+            return this.name||"WWS GraphQL";
+        }, 
+        oneditprepare: function() {
+        	// Init all variables
+        	console.log("[wwsNodes] Oneditprepare");
+    	}
+    });
+</script>
+
+<script type="text/x-red" data-template-name="wwsGraphQL">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-wwsApplications"><i class="icon-tag"></i> WWS App</label>
+        <input type="text" id="node-input-wwsApplications" placeholder="Waston Work App">
+    </div>
+    <div class="form-row">
+        <label for="node-input-graphQLQuery"><i class="fa fa-question-circle"></i> GraphQL Query </label>
+        <input type="text" id="node-input-graphQLQuery" placeholder="query getSpaceId{spaces(first:5){items{id title}}}">
+    </div>    
+</script>
+
+<script type="text/x-red" data-help-name="wwsGraphQL">
+    <p>A node to send a graphQL request to Watson Work Services</p>
+    <p>It uses : </p>
+    <li>msg.graphQLQuery : GraphQL Query (if set, it overides the UI query). Ex. : query getSpaceId{spaces(first:5){items{id title}}}</li>
+    <li>msg.graphQLResult : Result of the GraphQL Query</li>
+    <li>Other msg parts are left unchanged</li>
+</script>
