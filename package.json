@@ -1,12 +1,11 @@
 {
     "name"         : "node-red-contrib-wwsNodes",
-    "version"      : "0.4.1",
+    "version"      : "0.4.2",
     "description"  : "Draft of useful nodes for Watson Work Services",
     "dependencies": {
     	"url":"*",
     	"request":"*", 
     	"jsonwebtoken":"*", 
-    	"fs":"*",
     	"http":"*",
     	"https":"*",
     	"express":"*", 
