@@ -121,7 +121,15 @@ module.exports = function(RED) {
 				setTimeout(refresh, Math.max(0, t - 60000)).unref();
 
 				// Return a function that'll return the current token
-				cb(undefined, current);
+				try {
+					cb(undefined, current);
+				} catch (err) {
+					console.log('[wwsNodes] [Info] Not able to callback on refresh : %o', err);
+					this.accessToken = tok;
+					console.log('[wwsNodes] [Info] New token : %o', this.accessToken);
+					return;
+				}
+
 			});
 		};
 
