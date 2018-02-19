@@ -20,9 +20,9 @@ It uses :
 - msg.spaceId : Id of the space to send the message to (if set, it overides the UI choices)
  
  
-- Send to all spaces is limited to the 200 first spaces - List of spaces is only refreshed at restart / deploy unless specified by "Auto refresh space list at runtime" option.
+Send to all spaces is limited to the 200 first spaces - List of spaces is only refreshed at restart / deploy unless specified by "Auto refresh space list at runtime" option.
  
-- "Auto refresh space list at runtime" option will send the message to the new spaces in which the applications has been added after deployement (or restart of node-red). It has a performance impact but it is recommended if the application is supposed to be added / removed from Workspaces
+"Auto refresh space list at runtime" option will send the message to the new spaces in which the applications has been added after deployement (or restart of node-red). It has a performance impact but it is recommended if the application is supposed to be added / removed from Workspaces
 
 
 #### wwsIn
