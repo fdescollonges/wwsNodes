@@ -9,7 +9,8 @@
             listSpaces: {value:""},
             spaceId: {value:""},
             update: {value:""},
-            spacesRefreshed: {value:true}
+            //spacesRefreshed: {value:true},
+            autoRefresh: {value:false}
         },
         inputs:1,
         outputs:0,
@@ -47,6 +48,7 @@
     	        		$("#node-input-listSpaces").val(nodeConfig.listSpaces);
     	        	} 
     	        	show_spaces();
+    	        	$("#node-autoRefresh").show();
             		$("#node-listId").show();
             		nodeConfig.allSpaces = true;
         		} else {
@@ -57,6 +59,7 @@
     	        	} 
     	        	show_spaces();
             		$('#node-spaceId').show();
+    	        	$("#node-autoRefresh").hide();
             		$("#node-listId").hide();
             		nodeConfig.allSpaces = false;
         		}
@@ -142,6 +145,13 @@
         <input type="checkbox" id="node-input-allSpaces" style="display: inline-block; width: auto; vertical-align: top;" checked>
         <label for="node-input-allSpaces" style="width: 70%;"> Send to all spaces</label>
     </div>
+
+    <div class="form-row" id="node-autoRefresh">
+        <label>&nbsp;</label>
+        <input type="checkbox" id="node-input-autoRefresh" style="display: inline-block; width: auto; vertical-align: top;">
+        <label for="node-input-autoRefresh" style="width: 70%;"> Auto refresh space list at runtime</label>
+    </div>
+
     <div class="form-row" id="node-spaceId">
         <label for="node-input-spaceId"><i class="fa fa-empire"></i><span> SpaceID</span></label>
         <select id="node-input-spaceId" style="width:300px !important">
@@ -161,11 +171,13 @@
         <label for="node-input-update"><i class="fa fa-list"></i> Timestamp</label>
         <input type="text" id="node-input-update" placeholder="">
     </div>
-
+<!--
         <div class="form-row" id="node-spacesRefreshed" style="display:none">
            <label>&nbsp;</label>
            <a class="btn" id="node-btn-spacesRefreshed" href="#" disabled><span>Refresh Space list</span></a>
         </div>
+-->
+
 
 
 </script>
@@ -181,5 +193,8 @@
     <li>msg.spaceId : Id of the space to send the message to (if set, it overides the UI choices)</li>
     <p><p><p>Sample :</p>
     <img src="icons/message.jpg" alt="message sample">
+	<p></p>
+	<p>- "Auto refresh space list at runtime" option will send the message to the new spaces in which the applications has been added after deployement (or restart of node-red). It has a performance impact</p>
+	<p>- Send to all spaces is limited to the 200 first spaces</p> 
 
 </script>

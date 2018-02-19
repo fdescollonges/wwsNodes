@@ -124,9 +124,9 @@ module.exports = function(RED) {
 				try {
 					cb(undefined, current);
 				} catch (err) {
-					console.log('[wwsNodes] [Info] Not able to callback on refresh : %o', err);
+					//console.log('[wwsNodes] [Info] Not able to callback on refresh : %o', err);
 					this.accessToken = tok;
-					console.log('[wwsNodes] [Info] New token : %o', this.accessToken);
+					console.log('[wwsNodes] [Info] Refreshing token : %o', this.accessToken);
 					return;
 				}
 
