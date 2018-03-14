@@ -13,7 +13,7 @@
             autoRefresh: {value:false}
         },
         inputs:1,
-        outputs:0,
+        outputs:1,
         icon: "wws.png",
         align: 'right',
         label: function() {
@@ -184,17 +184,32 @@
 
 <script type="text/x-red" data-help-name="wwsSend">
     <p>A node to send a message to IBM Watson Workspace using IBM Watson Work Services</p>
-    <p>It uses : </p>
-    <li>msg.payload : text message</li>
-    <li>msg.color : color of the border</li>
-    <li>msg.title : title of the message</li>
-    <li>msg.name : sender of the message</li>
-    <li>msg.avatar : url of the picture of the sender</li> 
-    <li>msg.spaceId : Id of the space to send the message to (if set, it overides the UI choices)</li>
-    <p><p><p>Sample :</p>
-    <img src="icons/message.jpg" alt="message sample">
+    <h3>Inputs</h3>
+    <dl class="message-properties">
+    <dt>msg.payload<span class="property-type">string</span></dt><dd>The text of the message to send</dd>
+    <dt class="optional">msg.color</dt><dd>color of the border</dd>
+    <dt class="optional">msg.title</dt><dd>title of the message</dd>
+    <dt class="optional">msg.name</dt><dd>sender of the message</dd>
+    <dt class="optional">msg.avatar</dt><dd>url of the picture of the sender</dd>
+    <dt class="optional">msg.spaceID</dt><dd>Id of the space to send the message to (if set, it overides the UI choices)</dd>
+	</dl>
+
+    <h3>Outputs</h3><p></p>
+    
+<dl class="message-properties">
+
+    <dt>msg.sendResult<span class="property-type">object</span></dt><dd>Output of the API call</dd>
+    <p></p>
+	<img src="https://raw.githubusercontent.com/fdescollonges/wwsNodes/master/icons/message.jpg" alt="message sample">
 	<p></p>
+	</dl>
+
+	<h3>Details</h3>
+
 	<p>- "Auto refresh space list at runtime" option will send the message to the new spaces in which the applications has been added after deployement (or restart of node-red). It has a performance impact</p>
 	<p>- Send to all spaces is limited to the 200 first spaces</p> 
+
+<h3>References</h3>
+	<li><a href="https://github.com/fdescollonges/wwsNodes">GitHub</a> - wwsNode github</li>
 
 </script>

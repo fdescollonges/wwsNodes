@@ -78,15 +78,15 @@
         <input type="text" id="node-input-wwsApplications" placeholder="Waston Work App">
     </div>
 	<p style="margin-top: 10px;"></p>
-    <div class="form-row">
-        <label for="node-input-whId" style="width: 130px"><i class="icon-bookmark"></i> Webhook ID</label>
-        <input type="text" id="node-input-whId" placeholder="Webhook ID">
-    </div>
+
      <div class="form-row">
         <label for="node-input-callbackUrl" style="width: 130px"><i class="fa fa-globe"></i> Callback URL</label>
         <input type="text" id="node-input-callbackUrl" placeholder="/url">
     </div> 
-
+    <div class="form-row">
+        <label for="node-input-whId" style="width: 130px"><i class="icon-bookmark"></i> Webhook ID</label>
+        <input type="text" id="node-input-whId" placeholder="Webhook ID">
+    </div>
     <div class="form-row">
         <label for="node-input-whSecret" style="width: 130px"><i class="fa fa-key"></i> Webhook secret</label>
         <input type="password" id="node-input-whSecret" placeholder="Webhook Secret">
@@ -96,4 +96,27 @@
 
 <script type="text/x-red" data-help-name="wwsIn">
     <p>A node to receive a message from IBM Watson Workspace using IBM Watson Work Services</p>
+    <h3>Inputs</h3>
+    <dl class="message-properties">
+    <dt>Callback URL<span class="property-type">string</span></dt><dd>part of the URL to provide to <a href="https://workspace.ibm.com/developer/apps">Waston Work Services</a> when registering the application (see details)</dd>
+    <dt>Webhook ID<span class="property-type">string</span></dt><dd>Provided when registering the application in <a href="https://workspace.ibm.com/developer/apps">Waston Work Services</a></dd>
+    <dt>Webhook Secret <span class="property-type">string</span></dt><dd>Provided when registering the application in <a href="https://workspace.ibm.com/developer/apps">Waston Work Services</a></dd>
+
+	</dl>
+
+    <h3>Outputs</h3><p></p>
+    
+<dl class="message-properties">
+
+    <dt>msg.payload<span class="property-type">object</span></dt><dd>Message received by the webhook</dd>
+    <p></p>
+</dl>
+
+
+	<h3>Details</h3>
+<p>Full webhook callback URL (with hostname) for applications registration is displayed in red, above parameters</p>
+
+<h3>References</h3>
+	<li><a href="https://github.com/fdescollonges/wwsNodes">GitHub</a> - wwsNode github</li>
+<li><a href="https://workspace.ibm.com/developer/apps">Waston Work Services Apps management</a></li>
 </script>

@@ -61,7 +61,8 @@ module.exports = function(RED) {
 							// console.log (`Unable to send message : ${err}`);
 						} else {
 							node.status({fill:"green",shape:"dot",text:"Msg sent"});
-							// console.log (`Message sent : ${body}`);
+							msg.sendResult = body;
+							node.send(msg);
 						};
 					});
 				}
@@ -87,6 +88,8 @@ module.exports = function(RED) {
 						// ${err}`);
 					} else { 
 						node.status({fill:"green",shape:"dot",text:"Msg sent"});
+						msg.sendResult = body;
+						node.send(msg);
 						// console.log (`Message sent : {body}`);
 					};
 				});
@@ -131,7 +134,7 @@ module.exports = function(RED) {
 		var color = msg.color || '#0000FF';
 		var text = String(msg.payload) || '';
 		var name = msg.name || '';
-		var avatar = msg.avatar || 'https://raw.githubusercontent.com/fdescollonges/wwsNodes/master/icons/node-red.png';
+		var avatar = msg.avatar || 'https://api.watsonwork.ibm.com/photos/a398828f-827c-477f-a6bf-98c949e28a50';
 		var body = {
 				headers: {
 					Authorization: `Bearer ${jwtToken}`

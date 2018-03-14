@@ -37,9 +37,25 @@
 </script>
 
 <script type="text/x-red" data-help-name="wwsGraphQL">
-    <p>A node to send a graphQL request to Watson Work Services</p>
-    <p>It uses : </p>
-    <li>msg.graphQLQuery : GraphQL Query (if set, it overides the UI query). Ex. : query getSpaceId{spaces(first:5){items{id title}}}</li>
-    <li>msg.graphQLResult : Result of the GraphQL Query</li>
-    <li>Other msg parts are left unchanged</li>
+    <p></p>
+    <p>A node to send a graphQL request to IBM Watson Work Services</p>
+    <h3>Inputs</h3>
+    <dl class="message-properties">
+    <dt>msg.graphQLQuery<span class="property-type">string</span></dt><dd>GraphQL Query (if set, it overides the UI query).<p></p> Ex. : query getSpaceId{spaces(first:5){items{id title}}}</dd>
+
+	</dl>
+
+    <h3>Outputs</h3><p></p>
+    <dl class="message-properties">
+    <dt>msg.graphQLResult<span class="property-type">string</span></dt><dd>Result of the GraphQL Query</dd>
+    <dt>msg.graphQLInfo<span class="property-type">object</span></dt><dd>Full response from GraphQL Query (for debug)</dd>
+
+	</dl>
+    
+	<h3>Details</h3>
+	<p>Other msg parts are left unchanged</p>
+
+<h3>References</h3>
+	<li><a href="https://github.com/fdescollonges/wwsNodes">GitHub</a> - wwsNode github</li>
+
 </script>

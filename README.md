@@ -30,14 +30,18 @@ Receive a message from Watson Work Services
 Manage the Webhook subscription and the messages reception
 
 #### wwsGraphQL
-A node to send a graphQL request to Watson Work Services<
+A node to send a graphQL request to Watson Work Services
 It uses : 
     - msg.graphQLQuery : GraphQL Query (if set, it overides the UI query). Ex. : query getSpaceId{spaces(first:5){items{id title}}}
-    - msg.graphQLResult : Result of the GraphQL Query
+    - msg.graphQLResult : Output of the GraphQL Query
+    - msg.graphQLInfo : Full response from GraphQL Query (for debug)
 Other msg parts are left unchanged
+
+Now support BETA graphQL queries (thanks to Hayato :)
  
 ### Usage
-To be used with Node-RED
+To be used with Node-RED and Watson Work Service 
+Go to https://workspace.ibm.com/developer/apps for more information
 
 ### Developing
 Under development
