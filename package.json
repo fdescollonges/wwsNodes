@@ -1,6 +1,6 @@
 {
     "name": "node-red-contrib-wwsNodes",
-    "version": "0.5.9",
+    "version": "0.6.0",
     "description": "DEPRECATED - check node-red-contrib-wws instead",
     "dependencies": {
         "url": "*",

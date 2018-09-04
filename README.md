@@ -1,4 +1,12 @@
-# wwsNodes : Watson Work Services Nodes for NodeRed
+# This package has been DEPRECATED in favour of the node-red-contrib-wws package
+---
+---
+---
+
+
+
+
+## wwsNodes : Watson Work Services Nodes for NodeRed
 
 Set of useful nodes for Watson Work Services for Node-RED
 
